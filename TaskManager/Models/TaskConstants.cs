@@ -1,0 +1,28 @@
+﻿namespace TaskManager.Models
+{
+    // 状態を管理する定数
+    public static class TaskStatuses
+    {
+        public const string NotStarted = "未着手";
+        public const string InProgress = "進行中";
+        public const string Completed = "完了";
+    }
+
+    // 優先度を管理する定数
+    public static class TaskPriority
+    {
+        public const string High = "高";
+        public const string Medium = "中";
+        public const string Low = "低";
+    }
+
+    // ソート用の定数
+	public static class SortOrders
+	{
+		// 昇順（近い順）の定数
+		public const string Ascending = "asc";
+
+		// 降順（遠い順）の定数
+		public const string Descending = "desc";
+	}
+}

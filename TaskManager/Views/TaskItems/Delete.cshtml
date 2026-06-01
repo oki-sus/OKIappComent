@@ -1,0 +1,49 @@
+﻿@model TaskManager.ViewModels.TaskDeleteViewModel
+
+@{
+    ViewData["Title"] = "タスクの削除";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card border-danger shadow-sm">
+                <div class="card-header bg-danger text-white fw-bold">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>タスクの削除確認
+                </div>
+                <div class="card-body bg-light">
+                    <p class="text-center fw-bold text-danger mb-4">このタスクを完全に削除しますか？<br>この操作は取り消せません。</p>
+
+                    <div class="p-3 bg-white border rounded mb-4">
+                        <table class="table table-sm table-borderless mb-0">
+                            <tr>
+                                <th class="text-muted" style="width: 30%">タイトル</th>
+                                <td>@Model.Title</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">期限</th>
+                                <td>@Model.DueDate.ToShortDateString()</td>
+                            </tr>
+                            <tr>
+                                <th class="text-muted">カテゴリ</th>
+                                <td>@Model.Category</td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <form asp-action="Delete">
+                        <input type="hidden" asp-for="Id" />
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger fw-bold">
+                                <i class="bi bi-trash me-1"></i> はい、削除します
+                            </button>
+                            <a asp-action="Index" class="btn btn-outline-secondary">
+                                キャンセルして戻る
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,108 @@
+﻿@model TaskManager.ViewModels.TaskIndexViewModel
+@using TaskManager.Models
+
+<div class="pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2 fw-bold">タスク一覧</h1>
+</div>
+
+<div class="card mb-4 bg-light border-dark shadow-sm">
+    <div class="card-body">
+        <form asp-action="Index" method="get">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <label class="small fw-bold">キーワード</label>
+                    <input type="text" name="SearchString" class="form-control form-control-sm" value="@Model.SearchString" placeholder="タイトル検索..." />
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold">カテゴリ</label>
+                    <select name="Category" class="form-select form-select-sm">
+                        <option value="">すべて</option>
+                        @foreach (var c in Model.Categories)
+                        {
+                            <option value="@c" selected="@(Model.Category == c ? "selected" : null)">@c</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold">状態</label>
+                    <select name="Status" class="form-select form-select-sm">
+                        <option value="">すべて</option>
+                        <option value="@TaskStatuses.NotStarted" selected="@(Model.Status == TaskStatuses.NotStarted ? "selected" : null)">@TaskStatuses.NotStarted</option>
+                        <option value="@TaskStatuses.InProgress" selected="@(Model.Status == TaskStatuses.InProgress ? "selected" : null)">@TaskStatuses.InProgress</option>
+                        <option value="@TaskStatuses.Completed" selected="@(Model.Status == TaskStatuses.Completed ? "selected" : null)">@TaskStatuses.Completed</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end pb-1">
+                    <div class="form-check">
+                        <input class="form-check-input border-dark" type="checkbox" name="HideCompleted" value="true" id="hideCompleted" @(Model.HideCompleted ? "checked" : "")>
+                        <label class="form-check-label small fw-bold" for="hideCompleted">
+                            完了済みを非表示にする
+                        </label>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="small fw-bold">期限（〜まで）</label>
+                    <input type="date" name="DueDateBefore" class="form-control form-control-sm" value="@Model.DueDateBefore?.ToString("yyyy-MM-dd")" />
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold">優先度</label>
+                    <select name="Priority" class="form-select form-select-sm">
+                        <option value="">すべて</option>
+                        <option value="@TaskPriority.High" selected="@(Model.Priority == @TaskPriority.High ? "selected" : null)">@TaskPriority.High</option>
+                        <option value="@TaskPriority.Medium" selected="@(Model.Priority == @TaskPriority.Medium ? "selected" : null)">@TaskPriority.Medium</option>
+                        <option value="@TaskPriority.Low" selected="@(Model.Priority == @TaskPriority.Low ? "selected" : null)">@TaskPriority.Low</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="small fw-bold">期限の並び順</label>
+                    <select name="SortOrder" class="form-select form-select-sm">
+                        <option value="@SortOrders.Ascending" selected="@(Model.SortOrder == SortOrders.Ascending ? "selected" : null)">昇順（近い順）</option>
+                        <option value="@SortOrders.Descending" selected="@(Model.SortOrder == SortOrders.Descending ? "selected" : null)">降順（遠い順）</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end gap-2">
+                    <button type="submit" class="btn btn-dark btn-sm fw-bold flex-grow-1">検索実行</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary btn-sm fw-bold">クリア</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<table class="table table-bordered table-hover shadow-sm">
+    <thead class="table-dark">
+        <tr>
+            <th>タイトル</th>
+            <th>カテゴリ</th>
+            <th>期限</th>
+            <th class="text-center">状態</th>
+            <th class="text-center">優先度</th>
+            <th style="width: 280px;" class="text-center">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Tasks)
+        {
+            <tr>
+                <td class="align-middle">@item.Title</td>
+                <td class="align-middle">@item.Category</td>
+                <td class="align-middle">@item.DueDate.ToShortDateString()</td>
+                <td class="text-center align-middle">@item.Status</td>
+                <td class="text-center align-middle">@item.Priority</td>
+                <td class="text-center">
+                    @if (item.Status != TaskStatuses.Completed)
+                    {
+                        <form asp-action="Complete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('このタスクを完了にしてよろしいですか？');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-outline-success btn-sm">完了にする</button>
+                        </form>
+                    }
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm">編集</a>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">詳細</a>
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">削除</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

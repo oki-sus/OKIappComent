@@ -1,0 +1,114 @@
+﻿@page
+@model Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal.RegisterModel
+@{
+    ViewData["Title"] = "新規ユーザー登録";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card border-dark shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold text-center py-3">
+                    <h4 class="mb-0">TASK MANAGER / 登録</h4>
+                </div>
+                <div class="card-body bg-light p-4">
+                    <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="All" class="text-danger small mb-3" role="alert"></div>
+
+                        <div class="form-group mb-3">
+                            <label class="small fw-bold text-dark">メールアドレス</label>
+                            <input asp-for="Input.Email" class="form-control border-dark shadow-sm" autocomplete="username" placeholder="name@example.com" />
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label class="small fw-bold text-dark">パスワード</label>
+                            <input asp-for="Input.Password" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
+                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+                        </div>
+
+                        <div class="form-group mb-4">
+                            <label class="small fw-bold text-dark">パスワード（確認）</label>
+                            <input asp-for="Input.ConfirmPassword" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
+                            <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
+                        </div>
+
+                        <button id="registerSubmit" type="submit" class="w-100 btn btn-dark fw-bold py-2 mb-3 shadow">
+                            ユーザー登録を実行
+                        </button>
+
+                        <div class="text-center border-top pt-3">
+                            <a href="/Identity/Account/Login" class="text-decoration-none text-secondary small">
+                                すでにアカウントをお持ちの方はこちら
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // パスワード入力欄を取得
+            const passwordInput = document.getElementById("Input_Password");
+            if (!passwordInput) return;
+
+            // 初期状態はすべて未達成なので薄いグレーの四角に
+            const checklistHtml = `
+                <div class="card mt-2 shadow-sm border-secondary">
+                    <div class="card-body py-2 px-3 bg-white rounded">
+                        <p class="small text-muted mb-1 fw-bold"><i class="bi bi-shield-lock me-1"></i>パスワードの必須条件：</p>
+                        <ul class="list-unstyled mb-0 small" id="password-requirements" style="line-height: 1.6;">
+                            <li id="req-length" class="text-muted"><i class="bi bi-square me-1"></i> 6文字以上で入力してください</li>
+                            <li id="req-digit" class="text-muted"><i class="bi bi-square me-1"></i> 数字（0～9）を1文字以上含めてください</li>
+                            <li id="req-upper" class="text-muted"><i class="bi bi-square me-1"></i> 英大文字（A～Z）を1文字以上含めてください</li>
+                            <li id="req-lower" class="text-muted"><i class="bi bi-square me-1"></i> 英小文字（a～z）を1文字以上含めてください</li>
+                            <li id="req-symbol" class="text-muted"><i class="bi bi-square me-1"></i> 記号（\や!など）を1文字以上含めてください</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+            passwordInput.insertAdjacentHTML("afterend", checklistHtml);
+
+            // 文字が入力されるたびにリアルタイムでチェックする
+            passwordInput.addEventListener("input", function () {
+                const val = passwordInput.value;
+
+                // 条件チェック（正規表現）
+                const isLengthOk = val.length >= 6;
+                const isDigitOk  = /[0-9]/.test(val);
+                const isUpperOk  = /[A-Z]/.test(val);
+                const isLowerOk  = /[a-z]/.test(val);
+                const isSymbolOk = /[^A-Za-z0-9]/.test(val);
+
+                // アイコンと色を切り替える補助関数
+                function updateStatus(id, isOk, text) {
+                    const el = document.getElementById(id);
+                    if (isOk) {
+                        // 条件をクリアしたら「緑色のチェック付き四角」にする
+                        el.innerHTML = `<i class="bi bi-check-square-fill me-1"></i> ${text}`;
+                        el.className = "text-success fw-bold";
+                    } else {
+                        // 未達成なら「薄いグレーの空の四角」に戻す
+                        el.innerHTML = `<i class="bi bi-square me-1"></i> ${text}`;
+                        el.className = "text-muted";
+                    }
+                }
+
+                // 5つの条件をリアルタイム反映
+                updateStatus("req-length", isLengthOk, "6文字以上で入力してください");
+                updateStatus("req-digit",  isDigitOk,  "数字（0～9）を1文字以上含めてください");
+                updateStatus("req-upper",  isUpperOk,  "英大文字（A～Z）を1文字以上含めてください");
+                updateStatus("req-lower",  isLowerOk,  "英小文字（a～z）を1文字以上含めてください");
+                updateStatus("req-symbol", isSymbolOk, "記号（\や!など）を1文字以上含めてください");
+            });
+        });
+    </script>
+
+}
