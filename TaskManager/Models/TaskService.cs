@@ -7,8 +7,9 @@ namespace TaskManager.Models
 {
     public class TaskService
     {
+        // DBにアクセスするための窓口を保持する変数
         private readonly ApplicationDbContext _context;
-
+        // DBにアクセスするための窓口を保持するコンストラクタ
         public TaskService(ApplicationDbContext context)
         {
             _context = context;
@@ -16,12 +17,18 @@ namespace TaskManager.Models
 
         public async Task<bool> LoadTaskIntoViewModelAsync(TaskBaseViewModel vm, int? id, string? userId)
         {
+            // タスクのIdかユーザーIdのどちらかが空だった場合処理を中断
             if (id == null || string.IsNullOrEmpty(userId)) return false;
 
-            var foundTask = await _context.TaskItems
+			//Idが一致しているデータをデータベースから持ってくる
+			var foundTask = await _context.TaskItems
                 .FirstOrDefaultAsync(m => m.Id == id && m.CreatedBy == userId);
-
-            if (foundTask == null) return false;
+            
+            // 見つからなかったらエラーを出す
+            if (foundTask == null)
+            {
+                return false;
+            }
 
             vm.MapFromEntity(foundTask);
 
@@ -43,16 +50,21 @@ namespace TaskManager.Models
         // 一覧画面用のデータをViewModelにロードするメソッド
         public async Task LoadTaskIndexDataAsync(TaskIndexViewModel vm, string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return;
+            // ユーザーIdがなければ何もせず処理を終了させる
+            if (string.IsNullOrEmpty(userId))
+            {
+                return;
+            }
 
             // カテゴリ一覧の取得
             vm.Categories = await _context.TaskItems
                 .Where(t => t.CreatedBy == userId && !string.IsNullOrEmpty(t.Category))
                 .Select(t => t.Category)
-                .Distinct()
+                .Distinct()     // 重複をカット
                 .ToListAsync();
 
             // タスク一覧を取得するクエリの組み立て
+            // DBへ命令を送る準備
             var query = _context.TaskItems
                 .Where(t => t.CreatedBy == userId)
                 .AsQueryable();

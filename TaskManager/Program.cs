@@ -44,6 +44,7 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
+//最初の画面を自作の画面にする
 app.MapGet("/", context =>
 {
 	// ルート（/）にアクセスが来たら、認証状態に関わらず /TaskItems へ飛ばす

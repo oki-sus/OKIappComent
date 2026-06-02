@@ -5,12 +5,14 @@
     ViewData["Title"] = "タスク編集";
 }
 
+@* タスク編集画面 *@
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card border-dark shadow-sm">
                 <div class="card-header bg-dark text-white fw-bold">
-                    <i class="bi bi-pencil-square me-2"></i>タスク内容の編集
+                    <i class="bi bi-pencil-square me-2"></i>タスク内容の編集        @* ページタイトル *@
                 </div>
                 <div class="card-body bg-light">
                     <form asp-action="Edit">
@@ -65,22 +67,23 @@
 
                         <div class="d-flex gap-2 mt-3">
                             <button type="submit" class="btn btn-dark fw-bold px-5">
-                                <i class="bi bi-save me-1"></i>更新を保存
+                                <i class="bi bi-save me-1"></i>更新を保存        @* 保存ボタン *@
                             </button>
                             <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                                キャンセル
+                                キャンセル       @* キャンセルボタン *@
                             </a>
                         </div>
                     </form>
                 </div>
                 <div class="card-footer text-muted small text-end">
-                    作成日時: @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")
+                    作成日時: @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")     @* 作成日を表示 *@
                 </div>
             </div>
         </div>
     </div>
 </div>
 
+@* 入力チェックライブラリを読み込む *@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

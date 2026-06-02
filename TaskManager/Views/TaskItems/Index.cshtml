@@ -2,22 +2,22 @@
 @using TaskManager.Models
 
 <div class="pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2 fw-bold">タスク一覧</h1>
+    <h1 class="h2 fw-bold">タスク一覧</h1>   @* ページタイトル *@
 </div>
 
-<div class="card mb-4 bg-light border-dark shadow-sm">
+<div class="card mb-4 bg-light border-dark shadow-sm">      @* 検索欄 *@
     <div class="card-body">
         <form asp-action="Index" method="get">
             <div class="row g-3">
                 <div class="col-md-3">
                     <label class="small fw-bold">キーワード</label>
-                    <input type="text" name="SearchString" class="form-control form-control-sm" value="@Model.SearchString" placeholder="タイトル検索..." />
+                    <input type="text" name="SearchString" class="form-control form-control-sm" value="@Model.SearchString" placeholder="タイトル検索..." />      @* 入力欄に表示させる *@
                 </div>
                 <div class="col-md-3">
                     <label class="small fw-bold">カテゴリ</label>
                     <select name="Category" class="form-select form-select-sm">
-                        <option value="">すべて</option>
-                        @foreach (var c in Model.Categories)
+                        <option value="">すべて</option>       @* 初期値 *@
+                        @foreach (var c in Model.Categories)        @* カテゴリ名を重複無しでプルダウンに表示 *@
                         {
                             <option value="@c" selected="@(Model.Category == c ? "selected" : null)">@c</option>
                         }
@@ -72,7 +72,7 @@
 
 <table class="table table-bordered table-hover shadow-sm">
     <thead class="table-dark">
-        <tr>
+        <tr>        @* 見出し(列名) *@
             <th>タイトル</th>
             <th>カテゴリ</th>
             <th>期限</th>
@@ -84,7 +84,7 @@
     <tbody>
         @foreach (var item in Model.Tasks)
         {
-            <tr>
+            <tr>        @* 一覧に並べる *@
                 <td class="align-middle">@item.Title</td>
                 <td class="align-middle">@item.Category</td>
                 <td class="align-middle">@item.DueDate.ToShortDateString()</td>
@@ -92,15 +92,15 @@
                 <td class="text-center align-middle">@item.Priority</td>
                 <td class="text-center">
                     @if (item.Status != TaskStatuses.Completed)
-                    {
+                    {       @* 完了にする *@
                         <form asp-action="Complete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('このタスクを完了にしてよろしいですか？');">
                             @Html.AntiForgeryToken()
                             <button type="submit" class="btn btn-outline-success btn-sm">完了にする</button>
                         </form>
                     }
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm">編集</a>
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">詳細</a>
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">削除</a>
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm">編集</a>             @* 編集へ行くボタン *@
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">詳細</a>     @* 詳細へ行くボタン *@
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">削除</a>         @* 削除へ行くボタン *@
                 </td>
             </tr>
         }
