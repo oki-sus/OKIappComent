@@ -1,19 +1,33 @@
-﻿@page
+﻿@* 独立した「ページ」として動作させるためのRazorページ宣言 *@
+@page
+@* 新規ユーザー登録の裏側(C#)の登録ロジックを管理する、Identity標準のデータモデルを結びつける *@
 @model Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal.RegisterModel
 @{
+    @* ページのタイトルを設定。レイアウトの共通枠（_Layout.cshtml等）へ引き渡されてタブ名などに使われる *@
     ViewData["Title"] = "新規ユーザー登録";
 }
 
+@* 画面全体を中央寄せにし、上部に適度な余白（mt-5）を持たせる外枠のコンテナ *@
 <div class="container mt-5">
+    @* 横方向のグリッドシステムを開始し、中身の要素を水平方向の中央に配置する *@
     <div class="row justify-content-center">
+        @* パソコン画面などの横幅において、12分割中5マス分のスマートな幅に制限する *@
         <div class="col-md-5">
+            @* 見栄えを良くするため、暗めの枠線（border-dark）と軽い影（shadow-sm）をつけたカード枠を作る *@
             <div class="card border-dark shadow-sm">
+                @* カードのヘッダー部分を黒背景・白文字にし、テキストを中央揃え、太字、上下の余白（py-3）を確保する *@
                 <div class="card-header bg-dark text-white fw-bold text-center py-3">
+                    @* 新規登録画面のメインタイトルを表示。下部の余白（mb-0）は0にしてスッキリさせる *@
                     <h4 class="mb-0">TASK MANAGER / 登録</h4>
                 </div>
+
+                @* 入力フォームを配置するカードの本体部分。背景を薄グレーにし、内側の余白（p-4）をとる *@
                 <div class="card-body bg-light p-4">
+                    @* 登録用の送信フォーム。登録完了後の遷移先（returnUrl）を引き継ぎつつ、送信方式を「POST」に指定 *@
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+                        @* セキュリティ対策（CSRF対策）。別サイトからの不正な偽装リクエストを検知するためのトークンを埋め込む *@
                         @Html.AntiForgeryToken()
+                        @* 入力エラーが起きた際、すべての項目に関する不備（重複登録エラー等も含む）を画面上部にまとめて赤字で出す領域 *@
                         <div asp-validation-summary="All" class="text-danger small mb-3" role="alert"></div>
 
                         <div class="form-group mb-3">
@@ -22,23 +36,36 @@
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
 
+                        @* メールアドレス入力エリアのグループ（下部に余白を確保） *@
                         <div class="form-group mb-3">
+                            @* メールアドレス用のラベル。少し小さめの太字で濃い目の文字色に設定 *@
                             <label class="small fw-bold text-dark">パスワード</label>
+                            @* メールアドレスの入力ボックス。枠線を濃くし、軽い影を付け、自動補完を有効にし、プレースホルダーを表示 *@
                             <input asp-for="Input.Password" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
+                            
+                            @* 入力されたメールアドレスの形式が違う場合や、未入力の場合にその場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.Password" class="text-danger small"></span>
                         </div>
 
+                        @* 確認用パスワード入力エリアのグループ（下部に少し多めの余白 mb-4 を確保） *@
                         <div class="form-group mb-4">
+                            @* 確認用パスワードのラベル。少し小さめの太字で濃い目の文字色に設定 *@
                             <label class="small fw-bold text-dark">パスワード（確認）</label>
+                            @* 確認用パスワードの入力ボックス。誤入力を防ぐため、上記と同じ設定で2回目の入力を促す *@
                             <input asp-for="Input.ConfirmPassword" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
+                            
+                            @* 1回目に入力したパスワードと一致しない場合などに、その場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
                         </div>
 
+                        @* フォームの内容（入力データ）をサーバーに送信して登録処理を実行するための、横幅いっぱいの黒いボタン（影付き） *@
                         <button id="registerSubmit" type="submit" class="w-100 btn btn-dark fw-bold py-2 mb-3 shadow">
                             ユーザー登録を実行
                         </button>
 
+                        @* ログイン画面への切り替え案内リンク。上にうっすらと境界線（border-top）と余白を敷いて区切る *@
                         <div class="text-center border-top pt-3">
+                            @* すでにアカウントを持っている人のために、標準のログインページ（Login）へ戻るためのリンク *@
                             <a href="/Identity/Account/Login" class="text-decoration-none text-secondary small">
                                 すでにアカウントをお持ちの方はこちら
                             </a>
@@ -50,15 +77,20 @@
     </div>
 </div>
 
+@* 画面表示の後に実行したいJavaScript（スクリプト領域）を開始 *@
 @section Scripts {
+    @* ブラウザ側での高速な自動入力チェック機能を有効化するための共有部分（ライブラリ）を読み込む *@
     <partial name="_ValidationScriptsPartial" />
-
+    @* パスワードの複雑さ（大文字小文字や記号）をリアルタイムで視覚的にチェックする仕組み *@
     <script>
+        // 画面のHTML要素がすべてブラウザに読み込まれ、操作可能になったタイミングで実行する
         document.addEventListener("DOMContentLoaded", function () {
-            // パスワード入力欄を取得
+            // パスワードの入力欄（HTML要素）のIDを指定してピンポイントで取得
             const passwordInput = document.getElementById("Input_Password");
+            // 万が一、画面上にパスワード入力欄が見つからなかった場合はバグ防止のため処理をここで終了する
             if (!passwordInput) return;
 
+            // パスワードの文字数や文字種別の達成状況を綺麗に並べるための、チェックリスト用のHTML雛形を定義
             // 初期状態はすべて未達成なので薄いグレーの四角に
             const checklistHtml = `
                 <div class="card mt-2 shadow-sm border-secondary">
@@ -74,34 +106,42 @@
                     </div>
                 </div>
             `;
+            // 定義したチェックリスト用のHTMLを、パスワード入力ボックスのすぐ後ろ（真下）に滑り込ませて表示する
             passwordInput.insertAdjacentHTML("afterend", checklistHtml);
 
             // 文字が入力されるたびにリアルタイムでチェックする
             passwordInput.addEventListener("input", function () {
+                // 現在入力欄に打ち込まれている最新の文字列を取得
                 const val = passwordInput.value;
 
-                // 条件チェック（正規表現）
+                // 条件チェック
+                // 5つの必須条件を、正規表現（特定の文字種が含まれているかのパターンマッチ）を使って判定（クリアならtrue）
                 const isLengthOk = val.length >= 6;
                 const isDigitOk  = /[0-9]/.test(val);
                 const isUpperOk  = /[A-Z]/.test(val);
                 const isLowerOk  = /[a-z]/.test(val);
                 const isSymbolOk = /[^A-Za-z0-9]/.test(val);
 
-                // アイコンと色を切り替える補助関数
+                // 条件の達成・未達成に応じて、チェックリストの一行（アイコンと文字色）を書き換えるための補助関数
                 function updateStatus(id, isOk, text) {
+                    // 書き換え対象となるリスト項目（liタグ）をIDで取得
                     const el = document.getElementById(id);
+
+                    //もし条件をクリアしている（isOkがtrue）場合の処理
                     if (isOk) {
                         // 条件をクリアしたら「緑色のチェック付き四角」にする
                         el.innerHTML = `<i class="bi bi-check-square-fill me-1"></i> ${text}`;
+                        //文字色を成功を表す緑色（text-success）にして太字に変更する
                         el.className = "text-success fw-bold";
                     } else {
                         // 未達成なら「薄いグレーの空の四角」に戻す
                         el.innerHTML = `<i class="bi bi-square me-1"></i> ${text}`;
+                        // 文字色を標準的な薄いグレー（text-muted）に戻し、太字も解除する
                         el.className = "text-muted";
                     }
                 }
 
-                // 5つの条件をリアルタイム反映
+                // 定義した補助関数を使い、5つのチェック項目それぞれに対してリアルタイムな状態変更を反映させる
                 updateStatus("req-length", isLengthOk, "6文字以上で入力してください");
                 updateStatus("req-digit",  isDigitOk,  "数字（0～9）を1文字以上含めてください");
                 updateStatus("req-upper",  isUpperOk,  "英大文字（A～Z）を1文字以上含めてください");
