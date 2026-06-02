@@ -5,12 +5,14 @@
     ViewData["Title"] = "タスク作成";
 }
 
+@* 新規タスク登録画面 *@
+
 <div class="container mt-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card border-dark shadow-sm">
                 <div class="card-header bg-dark text-white fw-bold">
-                    <i class="bi bi-plus-circle me-2"></i>新規タスク登録
+                    <i class="bi bi-plus-circle me-2"></i>新規タスク登録       @* ページタイトル *@
                 </div>
                 <div class="card-body bg-light">
                     <form asp-action="Create">
@@ -19,26 +21,26 @@
                         <div class="row">
                             <div class="col-md-12 mb-3">
                                 <label asp-for="Title" class="form-label fw-bold"></label>
-                                <input asp-for="Title" class="form-control" placeholder="タスク名を入力..." />
+                                <input asp-for="Title" class="form-control" placeholder="タスク名を入力..." />     @* 入力欄に表示させる *@
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Category" class="form-label fw-bold"></label>
-                                <input asp-for="Category" class="form-control" placeholder="例: 仕事, プライベート" />
+                                <input asp-for="Category" class="form-control" placeholder="例: 仕事, プライベート" />       @* 入力欄に表示させる *@
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="DueDate" class="form-label fw-bold"></label>
-                                <input asp-for="DueDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                <input asp-for="DueDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />       @* カレンダー入力できるようにして、初期値に今日の日付を入れる *@
                                 <span asp-validation-for="DueDate" class="text-danger"></span>
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Status" class="form-label fw-bold"></label>
-                                <select asp-for="Status" class="form-select">
-                                    <option value="@TaskStatuses.NotStarted">@TaskStatuses.NotStarted</option>
+                                <select asp-for="Status" class="form-select">       @* 状態の選択肢 *@
+                                    <option value="@TaskStatuses.NotStarted" selected>@TaskStatuses.NotStarted</option>     @* 初期値設定 *@
                                     <option value="@TaskStatuses.InProgress">@TaskStatuses.InProgress</option>
                                     <option value="@TaskStatuses.Completed">@TaskStatuses.Completed</option>
                                 </select>
@@ -47,9 +49,9 @@
 
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Priority" class="form-label fw-bold"></label>
-                                <select asp-for="Priority" class="form-select">
+                                <select asp-for="Priority" class="form-select">     @* 優先度の選択肢 *@
                                     <option value="@TaskPriority.Low">@TaskPriority.Low</option>
-                                    <option value="@TaskPriority.Medium" selected>@TaskPriority.Medium</option>
+                                    <option value="@TaskPriority.Medium" selected>@TaskPriority.Medium</option>     @* 初期値設定 *@
                                     <option value="@TaskPriority.High">@TaskPriority.High</option>
                                 </select>
                                 <span asp-validation-for="Priority" class="text-danger"></span>
@@ -57,17 +59,17 @@
 
                             <div class="col-md-12 mb-3">
                                 <label asp-for="Detail" class="form-label fw-bold"></label>
-                                <textarea asp-for="Detail" class="form-control" rows="4" placeholder="メモなど..."></textarea>
+                                <textarea asp-for="Detail" class="form-control" rows="4" placeholder="メモなど..."></textarea>      @* 入力欄に表示させる *@
                                 <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
                         </div>
 
                         <div class="d-flex gap-2 mt-3">
                             <button type="submit" class="btn btn-dark fw-bold px-5">
-                                <i class="bi bi-check-lg me-1"></i>登録
+                                <i class="bi bi-check-lg me-1"></i>登録       @* 登録ボタン *@
                             </button>
                             <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                                キャンセル
+                                キャンセル       @* キャンセルボタン *@
                             </a>
                         </div>
                     </form>
@@ -77,6 +79,7 @@
     </div>
 </div>
 
+@* 入力チェックライブラリを読み込む *@
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");

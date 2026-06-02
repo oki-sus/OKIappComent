@@ -10,25 +10,27 @@ namespace TaskManager.ViewModels
         // 各画面で使うタスクの入れ物
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "必須項目です")]
-        [StringLength(100, ErrorMessage = "タイトルは100文字以内で入力してください")]
-        public string Title { get; set; } = string.Empty;
+        [Required(ErrorMessage = "必須項目です")]     // 必須入力にする
+		[StringLength(100, ErrorMessage = "タイトルは100文字以内で入力してください")]     // 文字数制限
+		public string Title { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "必須項目です")]
-        [StringLength(50, ErrorMessage = "カテゴリは50文字以内で入力してください")]
-        public string Category { get; set; } = string.Empty;
+        [Required(ErrorMessage = "必須項目です")]     // 必須入力にする
+		[StringLength(50, ErrorMessage = "カテゴリは50文字以内で入力してください")]       // 文字数制限
+		public string Category { get; set; } = string.Empty;
         
-        [Required(ErrorMessage = "必須項目です")]
-        [DataType(DataType.Date)]
+        [Required(ErrorMessage = "必須項目です")]     // 必須入力にする
+		[DataType(DataType.Date)]                     // カレンダー入力
         public DateTime DueDate { get; set; } = DateTime.Now;
 
         public string Status { get; set; } = TaskStatuses.NotStarted;
 
         public string Priority { get; set; } = TaskPriority.Medium;
 
-        [StringLength(1000, ErrorMessage = "詳細は1000文字以内で入力してください")]
-        public string? Detail { get; set; }
+        [StringLength(1000, ErrorMessage = "詳細は1000文字以内で入力してください")]     // 文字数制限
+		public string? Detail { get; set; }     // ?で未入力もOKに
 
+        // DBの情報群からこのViewModelへデータを詰め替える
+        // DBから取得したタスクのデータ
         public virtual void MapFromEntity(TaskItem entity)
         {
             this.Id = entity.Id;
