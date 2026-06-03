@@ -1,92 +1,143 @@
-﻿@model TaskManager.ViewModels.TaskEditViewModel
+﻿@* 編集画面に入力された値を保持し、コントローラーとやり取りするための専用の箱として TaskEditViewModel クラスを指定 *@
+@model TaskManager.ViewModels.TaskEditViewModel
+@* ステータスや優先度の定数（TaskStatuses など）を画面内でそのまま使うために名前空間をインポート *@
 @using TaskManager.Models
 
 @{
-    @* ページ名 *@
+    @* 共通レイアウト枠（_Layout.cshtml）のタブ名などに表示させるためのページタイトルを設定 *@
     ViewData["Title"] = "タスク編集";
 }
 
 @* タスク編集画面 *@
 
+@* タスク編集画面のメインコンテナ。上部に程よい余白（mt-4）を設定 *@
 <div class="container mt-4">
+    @* グリッドシステムを開始し、フォームを配置するカード要素を水平方向の中央に寄せる *@
     <div class="row justify-content-center">
+        @* パソコンなどの大画面において、12分割中8マス分の見やすい横幅に制限する *@
         <div class="col-md-8">
+            @* 黒い枠線（border-dark）と軽い影（shadow-sm）で立体感を出したカード型の外枠を作成 *@
             <div class="card border-dark shadow-sm">
+                @* カードのヘッダー部分。背景を黒（bg-dark）、文字を白にし、太字に設定 *@
                 <div class="card-header bg-dark text-white fw-bold">
-                    <i class="bi bi-pencil-square me-2"></i>タスク内容の編集        @* ページタイトル *@
+                    @* ノートと鉛筆のアイコン（bi-pencil-square）を文字の左側に配置してタイトルを表示 *@
+                    <i class="bi bi-pencil-square me-2"></i>タスク内容の編集
                 </div>
+
+                @* 各種入力項目を並べるカードの本体部分。背景を薄いグレー（bg-light）に設定 *@
                 <div class="card-body bg-light">
+                    @* コントローラーの Edit 上書き保存処理（POST）に向けてデータを送信するためのフォーム *@
                     <form asp-action="Edit">
+                        @* 入力エラーが発生した際、特定の項目（タイトル等）以外に関する共通エラーをまとめて表示する赤字領域 *@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        @* ID、作成者、作成日を隠しフィールドで保持する *@
+                        @* ユーザーには見せない隠し情報（type="hidden"）として、更新対象を特定する「タスクID」を仕込んでおく *@
                         <input type="hidden" asp-for="Id" />
+                        @* 上書き保存（Update）の際に、データベース上の最初の「作成日時」が消えてしまわないよう画面側で一時保管しておく隠しフィールド *@
                         <input type="hidden" asp-for="CreatedAt" />
 
+                        @* フォーム内の各入力欄を綺麗に整列させるための内側グリッドの開始 *@
                         <div class="row">
+                            @* パソコンでもスマホでも横幅いっぱいに広げる、タイトル入力エリアのグループ（下部に余白） *@
                             <div class="col-md-12 mb-3">
+                                @* 新しいTaskItemの模型をその場で仮作成し、そこに設定されている [Display(Name = "タイトル")] から日本語名を安全に自動取得して表示 *@
                                 <label asp-for="@(new TaskItem().Title)" class="form-label fw-bold"></label>
+                                @* 現在データベースに登録されているタイトルが最初から書き込まれた状態の入力ボックス *@
                                 <input asp-for="Title" class="form-control" />
+                                @* 編集時に入力不備（文字数オーバーや空欄）があった場合に、その場で赤文字エラーを出す場所 *@
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div>
 
+                            @* 画面の左半分（col-md-6）に配置する、カテゴリ入力エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* 仮作成した模型のプロパティから日本語名（カテゴリ）を自動取得して表示するラベル *@
                                 <label asp-for="@(new TaskItem().Category)" class="form-label fw-bold"></label>
+                                @* 現在登録されているカテゴリ名が最初から書き込まれた状態の入力ボックス *@
                                 <input asp-for="Category" class="form-control" />
+                                @* カテゴリの入力ルールに違反があった場合に赤文字エラーを出す場所 *@
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
 
+                            @* 画面の右半分（col-md-6）に配置する、期限日入力エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* 仮作成した模型のプロパティから日本語名（期限）を自動取得して表示するラベル *@
                                 <label asp-for="@(new TaskItem().DueDate)" class="form-label fw-bold"></label>
+                                @* カレンダー選択式の入力ボックス（type="date"）。現在登録されている期限日が自動ではめ込まれて表示される *@
                                 <input asp-for="DueDate" class="form-control" type="date" />
+                                @* 期限日の入力データに不備がある場合に赤文字エラーを出す場所 *@
                                 <span asp-validation-for="DueDate" class="text-danger"></span>
                             </div>
 
+                            @* 画面の左半分（col-md-6）に配置する、ステータス選択エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* 仮作成した模型のプロパティから日本語名（状態）を自動取得して表示するラベル *@
                                 <label asp-for="@(new TaskItem().Status)" class="form-label fw-bold"></label>
+                                
+                                @* 状態（進捗）をドロップダウン形式で選ばせるための選択ボックス。現在登録されている状態が自動的に初期選択される（asp-forの自動判別機能） *@
                                 <select asp-for="Status" class="form-select">
+                                    @* 選択肢としての「未着手」を設定 *@
                                     <option value="@TaskStatuses.NotStarted">@TaskStatuses.NotStarted</option>
+                                    @* 選択肢としての「進行中」を設定 *@
                                     <option value="@TaskStatuses.InProgress">@TaskStatuses.InProgress</option>
+                                    @* 選択肢としての「完了」を設定 *@
                                     <option value="@TaskStatuses.Completed">@TaskStatuses.Completed</option>
                                 </select>
                             </div>
 
                             <div class="col-md-6 mb-3">
+                                @* 画面の右半分（col-md-6）に配置する、優先度選択エリアのグループ（下部に余白） *@
                                 <label asp-for="@(new TaskItem().Priority)" class="form-label fw-bold"></label>
+                                
+                                @* 優先度をドロップダウン形式で選ばせるための選択ボックス。現在登録されている優先度が自動的に初期選択される（asp-forの自動判別機能） *@
                                 <select asp-for="Priority" class="form-select">
+                                    @* 選択肢としての「低」を設定 *@
                                     <option value="@TaskPriority.Low">@TaskPriority.Low</option>
+                                    @* 選択肢としての「中」を設定 *@
                                     <option value="@TaskPriority.Medium">@TaskPriority.Medium</option>
+                                    @* 選択肢としての「高」を設定 *@
                                     <option value="@TaskPriority.High">@TaskPriority.High</option>
                                 </select>
                             </div>
 
+                            @* 横幅いっぱいに広げる、詳細メモ入力エリアのグループ（下部に余白） *@
                             <div class="col-md-12 mb-3">
+                                @* 仮作成した模型のプロパティから日本語名（詳細）を自動取得して表示するラベル *@
                                 <label asp-for="@(new TaskItem().Detail)" class="form-label fw-bold"></label>
+                                @* 複数行の長文を入力できるテキストエリア。現在登録されている詳細メモが中に表示された状態で、高さを縦4行分に設定 *@
                                 <textarea asp-for="Detail" class="form-control" rows="4"></textarea>
                             </div>
                         </div>
 
+                        @* 2つのボタン（保存・キャンセル）を横並びにする配置領域（上部余白付き） *@
                         <div class="d-flex gap-2 mt-3">
+                            @* フォームに打ち込まれた最新の変更内容をまとめてサーバーへ送信するための、横幅に余裕を持たせた太字の黒いボタン *@
                             <button type="submit" class="btn btn-dark fw-bold px-5">
-                                <i class="bi bi-save me-1"></i>更新を保存        @* 保存ボタン *@
+                                @* 保存っぽいアイコン（bi-save）を文字の左側に配置 *@
+                                <i class="bi bi-save me-1"></i>更新を保存
                             </button>
+
+                            @* 編集を破棄して、安全にタスク一覧画面（Indexアクション）へと戻るための、枠線仕立てのボタン（リンク） *@
                             <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                                キャンセル       @* キャンセルボタン *@
+                                キャンセル
                             </a>
                         </div>
                     </form>
                 </div>
+
+                @* カードの最下部（フッター）部分。文字色を薄グレー（text-muted）の小さめ（small）にし、テキストを右寄せ（text-end）にする *@
                 <div class="card-footer text-muted small text-end">
-                    作成日時: @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")     @* 作成日を表示 *@
+                    @* この編集画面用ViewModelが保持している、このタスクが最初に作成された日時を分単位まで出力 *@
+                    作成日時: @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-@* 入力チェックライブラリを読み込む *@
+@* 画面のHTMLを読み込み終わった後に、追加のJavaScriptを配置するスクリプトセクションを開始 *@
 @section Scripts {
     @{
+        @* 画面をリロードせず、送信ボタンを押したその場（ミリ秒）で高速に入力チェックを行う共通の部品スクリプトを合体して読み込む *@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

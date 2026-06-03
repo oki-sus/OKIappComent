@@ -1,56 +1,96 @@
-﻿<!DOCTYPE html>
+﻿
+@* このファイルも自動生成されたもので、一部変更して使っています *@
+
+@* このファイルがHTML5という最新の規格で作られたドキュメントであることをブラウザに宣言 *@
+<!DOCTYPE html>
+@* 画面全体の言語を日本語（ja）に指定し、ブラウザの自動翻訳などの誤動作を防ぐ設定 *@
 <html lang="ja">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - TaskManager</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <style>
-        body { min-height: 100vh; display: flex; flex-direction: column; }
-        #sidebarMenu { min-height: 100vh; }
-    </style>
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
-            <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 fw-bold" asp-area="" asp-controller="TaskItems" asp-action="Index">TASK MANAGER</a>
-        </nav>
-    </header>
+    <head>
+        @* 文字のエンコード（文字化け対策）を標準的な世界規格である「UTF-8」に指定 *@
+        <meta charset="utf-8" />
+        @* スマホやタブレットなど、あらゆる画面サイズの端末でデザインを自動最適化（レスポンシブ対応）させるための設定 *@
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        @* 各画面のViewModel等で設定された個別タイトル（ViewData["Title"]）を読み込み、ブラウザのタブ名に「タイトル - TaskManager」の形式で表示する *@
+        <title>@ViewData["Title"] - TaskManager</title>
+        @* デザインを綺麗に整えるための定番Webフレームワーク「Bootstrap」のスタイルシート（CSS）を読み込む *@
+        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+        @* アプリ固有の独自の見た目を調整するために、自分で作成したカスタムスタイルシート（CSS）を読み込む。asp-append-versionでキャッシュによる更新漏れを防止 *@
+        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+        @* タスク一覧や新規作成ボタンの横にある各種アイコン（bi bi-plus-circleなど）を表示するため、Bootstrap公式のアイコンフォントをインターネット経由で読み込む *@
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        @* 標準のBootstrapだけでは足りない、このアプリ独自のレイアウト配置を調整するためのCSS記述エリア *@
+        <style>
+            @* 画面のコンテンツが少なくても、背景色が途切れないように画面の縦幅いっぱいの最小高さ（100vh）を確保し、縦並びのflex配置にする *@
+            body { min-height: 100vh; display: flex; flex-direction: column; }
+            @* 左側に配置するメニュー（サイドバー）の縦幅を、画面の高さにきっちり合わせる設定 *@
+            #sidebarMenu { min-height: 100vh; }
+        </style>
+    </head>
 
-    <div class="container-fluid">
-        <div class="row">
-            <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse shadow">
-                <div class="position-sticky pt-3">
-                    <ul class="nav flex-column mt-3">
-                        <li class="nav-item mb-2">
-                            <a class="nav-link text-white fs-5 fw-bold" asp-area="" asp-controller="TaskItems" asp-action="Index">
-                                <i class="bi bi-list-task me-2"></i>タスク一覧
-                            </a>
-                        </li>
-                        <li class="nav-item mb-2">
-                            <a class="nav-link text-white fs-5 fw-bold" asp-area="" asp-controller="TaskItems" asp-action="Create">
-                                <i class="bi bi-plus-circle me-2"></i>新規作成
-                            </a>
-                        </li>
-                    </ul>
-                    <hr class="text-secondary mx-3">
-                    <div class="px-2">
-                        <partial name="_LoginPartial" />
-                    </div>
-                </div>
+    <body>
+        @* 画面の最上部を構成するヘッダーエリアの開始 *@
+        <header>
+            @* 黒背景（bg-dark）のナビゲーションバーを画面最上部に固定（sticky-top）し、軽い影をつけたデザイン枠 *@
+            <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+                @* ロゴ部分。クリックすると自動的にタスク一覧画面（TaskItemsコントローラーのIndexアクション）へとジャンプする太字のリンク *@
+                <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 fw-bold" asp-area="" asp-controller="TaskItems" asp-action="Index">TASK MANAGER</a>
             </nav>
+        </header>
 
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                @RenderBody()
-            </main>
+        @* ヘッダーの下に配置される、画面幅いっぱいに広がるメイン領域のコンテナ *@
+        <div class="container-fluid">
+            @* 横方向のグリッドシステムを開始し、左側のメニュー（サイドバー）と右側のメインコンテンツを横並びにする *@
+            <div class="row">
+                @* 左側メニュー（サイドバー）エリア。パソコン画面では左側（12分割中2〜3マス分）に常に表示され、背景を黒（bg-dark）にし右側に影をつける *@
+                <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-dark sidebar collapse shadow">
+                    @* スクロールしてもメニューが画面左側に固定されて付いてくる（position-sticky）ようにし、上部に余白を確保 *@
+                    <div class="position-sticky pt-3">
+                        @* メニュー項目を縦並び（flex-column）のリスト形式で配置 *@
+                        <ul class="nav flex-column mt-3">
+                            @* 「タスク一覧」メニュー項目の外枠（下部に少し余白を確保） *@
+                            <li class="nav-item mb-2">
+                                @* クリックするとタスク一覧画面（TaskItemsコントローラーのIndexアクション）へ遷移する、少し大きめの白文字リンク *@
+                                <a class="nav-link text-white fs-5 fw-bold" asp-area="" asp-controller="TaskItems" asp-action="Index">
+                                    @* タスクリストを表すアイコン（bi-list-task）を文字の左側に配置 *@
+                                    <i class="bi bi-list-task me-2"></i>タスク一覧
+                                </a>
+                            </li>
+
+                            @* 「新規作成」メニュー項目の外枠（下部に少し余白を確保） *@
+                            <li class="nav-item mb-2">
+                                @* クリックすると新規作成画面（TaskItemsコントローラーのCreateアクション）へ遷移する、少し大きめの白文字リンク *@
+                                <a class="nav-link text-white fs-5 fw-bold" asp-area="" asp-controller="TaskItems" asp-action="Create">
+                                    @* プラスマークのアイコン（bi-plus-circle）を文字の左側に配置 *@
+                                    <i class="bi bi-plus-circle me-2"></i>新規作成
+                                </a>
+                            </li>
+                        </ul>
+
+                        @* メニュー項目とログイン情報エリアを視覚的に美しく区切るための、薄グレーの横線（区切り線） *@
+                        <hr class="text-secondary mx-3">
+                        @* ログイン・ログアウト関連のボタンを配置するための、左右に余白を設けた領域 *@
+                        <div class="px-2">
+                            @* ログイン状態に応じて「ユーザーネーム／ログアウト」または「ログイン」を自動切換する共通部品（_LoginPartial.cshtml）をここに呼び出す *@
+                            <partial name="_LoginPartial" />
+                        </div>
+                    </div>
+                </nav>
+
+                @* 右側のメインコンテンツ表示エリア。パソコン画面ではサイドバーを除いた残りのスペース（12分割中9〜10マス分）をいっぱいに使う *@
+                <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
+                    @* 各画面（Index.cshtmlやCreate.cshtmlなど）の中身が、ここに自動的にはめ込まれて合体・描画される *@
+                    @RenderBody()
+                </main>
+            </div>
         </div>
-    </div>
 
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+        @* ボタンのクリックやアニメーションなど、画面にリッチな動きをつけるための基礎ライブラリ「jQuery」を読み込む *@
+        <script src="~/lib/jquery/dist/jquery.min.js"></script>
+        @* Bootstrapのデザイン部品（ポップアップやドロップダウン等）を正常に動かすためのJavaScritプログラムを読み込む *@
+        <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+        @* アプリ固有の全体共通の動的な処理を行うために、自分で作成したJavaScriptファイルを読み込む *@
+        <script src="~/js/site.js" asp-append-version="true"></script>
+        @* 各画面の最下部（@section Scripts）で個別に用意されたJavaScript（入力チェックなど）がある場合、それをここに非同期で合体させて実行する（必須ではない扱い） *@
+        @await RenderSectionAsync("Scripts", required: false)
+    </body>
 </html>

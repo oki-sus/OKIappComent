@@ -1,5 +1,6 @@
-﻿@* 入力チェック専用のJavaScriptライブラリ *@
+﻿@* 文字数超過や空欄チェックなど「入力チェック（バリデーション）」の基礎機能を提供する標準JavaScriptライブラリ *@
 <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
 
-@* 上のライブラリとASP.NET Coreを繋ぐ仲介役 *@
+@* C#（サーバー側）で設定した[Required]や[StringLength]などの入力ルールを、 *@
+@* 自動的にJavaScriptのチェックルールへと翻訳してブラウザ上で瞬時に実行できるようにする、ASP.NET Core専用の「仲介役（通訳）」ライブラリ *@
 <script src="~/lib/jquery-validation-unobtrusive/dist/jquery.validate.unobtrusive.min.js"></script>

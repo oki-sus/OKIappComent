@@ -1,46 +1,77 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿// データベースの主キー（[Key]）や入力制限（[Required]）を設定するための名前空間をインポート
+using System.ComponentModel.DataAnnotations;
+// データベースのテーブル名や列名（[Column]）を直接指定するための名前空間をインポート
 using System.ComponentModel.DataAnnotations.Schema;
+// Entity Framework Coreのデータベース操作に関する基本機能をインポート
 using Microsoft.EntityFrameworkCore;
+// タスクのステータスや優先度の定数（TaskStatuses等）が定義されている場所をインポート
 using TaskManager.Data;
 
+// データを管理する仕組み（モデル層）であることを示す名前空間の定義
 namespace TaskManager.Models
 {
 	public class TaskItem
 	{
-        [Key]		// 主キー
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]		// 自動採番(番号割り当て)
-        [Column("Id")]		// DBのカラム(列)を指定
-        public int Id { get; set; } = 0;
+		// このプロパティが、データベース内でデータを1件ずつ識別するための「主キー（プライマリキー）」であることを指定
+		[Key]
+		// データベース側で新しくレコードが追加された際、1, 2, 3... と自動的に番号を増やす（自動採番）設定
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+		// データベース内の実際のテーブルの列名（カラム名）を「Id」という名前に指定
+		[Column("Id")]
+		// タスクの固有識別番号を保持するプロパティ（初期値として0を設定）
+		public int Id { get; set; } = 0;
 
-        [Required(ErrorMessage = "必須項目です")]		// 必須入力にする
-		[Display(Name = "タイトル")]		// 画面表示
-        [StringLength(100, ErrorMessage = "タイトルは100文字以内で入力してください")]		// 文字数制限
-        public string Title { get; set; } = string.Empty;
+		// 画面からの入力およびデータベースへの保存において、値が空っぽであることを禁止する制限
+		[Required(ErrorMessage = "必須項目です")]
+		// 画面（HTML）でラベルを表示する際、プロパティ名（Title）ではなく「タイトル」という日本語で表示させる設定
+		[Display(Name = "タイトル")]
+		// データベースの最大文字数を100文字に制限し、超えた場合は指定のエラーメッセージを出す設定
+		[StringLength(100, ErrorMessage = "タイトルは100文字以内で入力してください")]
+		// タスクの名前（件名）を保持するプロパティ（Nullエラー防止のため初期値に空文字を設定）
+		public string Title { get; set; } = string.Empty;
 
-		[Required(ErrorMessage = "必須項目です")]     // 必須入力にする
-		[Display(Name = "カテゴリ")]        // 画面表示
-		[StringLength(50, ErrorMessage = "カテゴリは50文字以内で入力してください")]			// 文字数制限
+		// 画面からの入力およびデータベースへの保存において、カテゴリ未入力を禁止する制限
+		[Required(ErrorMessage = "必須項目です")]
+		// 画面のラベル表示において「カテゴリ」という日本語名を使用する設定
+		[Display(Name = "カテゴリ")]
+		// データベースの最大文字数を50文字に制限し、超えた場合は指定のエラーメッセージを出す設定
+		[StringLength(50, ErrorMessage = "カテゴリは50文字以内で入力してください")]
+		// データベースの最大文字数を50文字に制限し、超えた場合は指定のエラーメッセージを出す設定
 		public string Category { get; set; } = string.Empty;
 
-		[Required(ErrorMessage = "必須項目です")]     // 必須入力にする
-		[Display(Name = "期限")]      // 画面表示
+		// 画面からの入力およびデータベースへの保存において、期限日が未入力になるのを禁止する制限
+		[Required(ErrorMessage = "必須項目です")]
+		// 画面のラベル表示において「期限」という日本語名を使用する設定
+		[Display(Name = "期限")]
+		// 画面（HTML）で入力ボックスを作る際、時刻なしの「日付入力専用（カレンダー選択）」のUIにするよう指定
 		[DataType(DataType.Date)]
+		// タスクの完了期限となる年月日を保持するプロパティ
 		public DateTime DueDate { get; set; }
 
-		[Display(Name = "状態")]      // 画面表示
+		// 画面のラベル表示において「状態」という日本語名を使用する設定
+		[Display(Name = "状態")]
+		// タスクの進行状況を保持するプロパティ（新規作成時の初期値として「未着手」の文字列を設定）
 		public string Status { get; set; } = TaskStatuses.NotStarted;
 
-		[Display(Name = "優先度")]     // 画面表示
+		// タスクの進行状況を保持するプロパティ（新規作成時の初期値として「未着手」の文字列を設定）
+		[Display(Name = "優先度")]
+		// タスクの重要度・緊急度を保持するプロパティ（新規作成時の初期値として「中」の文字列を設定）
 		public string Priority { get; set; } = TaskPriority.Medium;
 
-		[Display(Name = "詳細")]      // 画面表示
-		[StringLength(1000, ErrorMessage = "詳細は1000文字以内で入力してください")]			// 文字数制限
+		// 画面のラベル表示において「詳細」という日本語名を使用する設定
+		[Display(Name = "詳細")]
+		// データベースの最大文字数を1000文字に制限し、超えた場合は指定のエラーメッセージを出す設定
+		[StringLength(1000, ErrorMessage = "詳細は1000文字以内で入力してください")]
+		// タスクの具体的なメモや説明文を保持するプロパティ（末尾の ? により、未入力（Null）であっても許可する）
 		public string? Detail { get; set; }
 
-		// 管理・追跡用カラム
-		public DateTime CreatedAt { get; set; } = DateTime.Now;		// いつ作ったか
-		public string? CreatedBy { get; set; }						// 誰が作ったか
-		public DateTime UpdatedAt { get; set; } = DateTime.Now;		// 最終更新日時
+		// システム側でのデータ管理や、他人のタスクを非表示にするセキュリティ追跡用の列
+		// タスクがデータベースに最初に登録された日時を保持するプロパティ（初期値として、生成された瞬間の現在時刻を設定）
+		public DateTime CreatedAt { get; set; } = DateTime.Now;
+		// このタスクを作成したユーザーの固有ID（IdentityUserのID）を紐付けるプロパティ（Nullを許容）
+		public string? CreatedBy { get; set; }
+		// タスクの内容が上書き変更された最終日時を保持するプロパティ（初期値として、生成された瞬間の現在時刻を設定）
+		public DateTime UpdatedAt { get; set; } = DateTime.Now;
 
 	}
 }

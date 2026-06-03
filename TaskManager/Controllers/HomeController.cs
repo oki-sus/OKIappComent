@@ -1,3 +1,5 @@
+// 自動生成されたもので、今回使っていません
+
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using TaskManager.Models;

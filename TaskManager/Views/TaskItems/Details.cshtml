@@ -1,72 +1,114 @@
-﻿@model TaskManager.ViewModels.TaskDetailsViewModel
+﻿@* 詳細画面に表示するデータを受け取るための専用の箱として TaskDetailsViewModel クラスを指定 *@
+@model TaskManager.ViewModels.TaskDetailsViewModel
+@* ステータスの定数（TaskStatuses.Completed など）を画面内でそのまま使うために名前空間をインポート *@
 @using TaskManager.Models
 
 @{
-    @* ページ名 *@
+    @* 共通レイアウト枠（_Layout.cshtml）のタブ名などに表示させるためのページタイトルを設定 *@
     ViewData["Title"] = "タスク詳細";
 }
 
-@* タスク詳細画面 *@
-
+@* タスク詳細画面のメインコンテナ。上部に程よい余白（mt-4）を設定 *@
 <div class="container mt-4">
+    @* グリッドシステムを開始し、詳細表示のカード要素を水平方向の中央に寄せる *@
     <div class="row justify-content-center">
+        @* パソコンなどの大画面において、12分割中8マス分の見やすい横幅に制限する *@
         <div class="col-md-8">
+            @* 黒い枠線（border-dark）と軽い影（shadow-sm）で立体感を出したカード型の外枠を作成 *@
             <div class="card border-dark shadow-sm">
+                @* カードのヘッダー部分。背景を黒（bg-dark）、文字を白にし、左右の要素を端と端に綺麗に並べる（d-flex justify-content-between） *@
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
-                    <span class="fw-bold"><i class="bi bi-info-circle me-2"></i>タスク詳細</span>        @* ページタイトル *@
+                    @* インフォメーションマークのアイコン（bi-info-circle）を太字タイトルの左側に配置 *@
+                    <span class="fw-bold"><i class="bi bi-info-circle me-2"></i>タスク詳細</span>
+                    
+                    @* 条件付き表示：ステータスが完了（Completed）なら緑色（bg-success）、それ以外なら黄色（bg-warning）のバッジで状態を表示 *@
                     <span class="badge @(Model.Status == TaskStatuses.Completed ? "bg-success" : "bg-warning text-dark")">
                         @Model.Status
                     </span>
                 </div>
+
+                @* タスクの内容を表示するカードの本体部分。背景を薄いグレー（bg-light）に設定 *@
                 <div class="card-body bg-light">
+                    @* タイトルを表示するための横一列の行（下部に少し多めの余白 mb-4 を確保） *@
                     <div class="row mb-4">
+                        @* ラベル側。横幅を12分割中3マス（col-sm-3）に設定し、太字かつ薄グレー文字（text-muted）にする *@
                         <div class="col-sm-3 fw-bold text-muted">タイトル</div>
+                        @* データ側。横幅を残り9マス（col-sm-9）使い、文字サイズを少し大きめ（fs-5）にしてタスク名を出力 *@
                         <div class="col-sm-9 fs-5">@Model.Title</div>
                     </div>
 
+                    @* カテゴリと優先度を横並びで表示するための行（下部に余白） *@
                     <div class="row mb-3">
+                        @* 画面の左半分（col-md-6）にカテゴリ表示領域を配置 *@
                         <div class="col-md-6">
+                            @* 内側でさらに細かく2分割するための行（row） *@
                             <div class="row">
+                                @* 項目名を半分（col-sm-6）、太字、薄グレー文字に指定 *@
                                 <div class="col-sm-6 fw-bold text-muted">カテゴリ</div>
+                                @* データベースから取得したカテゴリ名を出力 *@
                                 <div class="col-sm-6">@Model.Category</div>
                             </div>
                         </div>
+
+                        @* 画面の右半分（col-md-6）に優先度表示領域を配置 *@
                         <div class="col-md-6">
+                            @* 内側でさらに細かく2分割するための行（row） *@
                             <div class="row">
+                                @* 項目名を半分（col-sm-6）、太字、薄グレー文字に指定 *@
                                 <div class="col-sm-6 fw-bold text-muted">優先度</div>
+                                @* データベースから取得した優先度（高、中、低）を出力 *@
                                 <div class="col-sm-6">@Model.Priority</div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="row mb-4">
+                    @* 期限日を表示するための行（下部に少し多めの余白 mb-4 を確保） *@
+					<div class="row mb-4">
+						<a href="c:\users\nagoya-study056\source\repos\okiappcoment\taskmanager\views\taskitems\details.cshtml">c:\users\nagoya-study056\source\repos\okiappcoment\taskmanager\views\taskitems\details.cshtml</a>
+                        @* 画面の左半分（col-md-6）のスペースを使用 *@
                         <div class="col-md-6">
+                            @* 内側で細かく分割するための行（row） *@
                             <div class="row">
+                                @* 項目名を半分（col-sm-6）、太字、薄グレー文字に指定 *@
                                 <div class="col-sm-6 fw-bold text-muted">期限</div>
+                                @* 期限日を目立たせるため、赤文字の太字（text-danger fw-bold）にし、年月日（yyyy/MM/dd）の形式で出力 *@
                                 <div class="col-sm-6 text-danger fw-bold">@Model.DueDate.ToString("yyyy/MM/dd")</div>
                             </div>
                         </div>
                     </div>
 
+                    @* 上記の基本ステータス領域と、下部の詳細説明領域を視覚的に美しく区切るための横線 *@
                     <hr />
 
+                    @* 詳細説明（メモ）を表示するエリアのグループ（下部に余白） *@
                     <div class="mb-4">
+                        @* 詳細説明のラベル。太字、薄グレー文字にし、ラベル下部に少し隙間（mb-2）を開ける *@
                         <label class="fw-bold text-muted mb-2">詳細説明</label>
+                        @* メモ書きエリア。背景を白、枠線と角丸にし、最低の高さ（min-height: 150px）を確保。white-space: pre-wrap で入力時の改行や空白をそのまま画面に再現する *@
                         <div class="p-3 bg-white border rounded" style="min-height: 150px; white-space: pre-wrap;">@Model.Detail</div>
                     </div>
 
+                    @* アクションボタン（編集・戻る）を横並びにする領域。上にうっすら境界線（border-top）と余白を敷いて区切る *@
                     <div class="d-flex gap-2 border-top pt-3">
+                        @* このタスクを編集するための、編集画面（Editアクション）へ現在のタスクID（asp-route-id）を引き連れて移動する黒いボタン *@
                         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-dark px-4">
-                            <i class="bi bi-pencil-square me-1"></i> 編集する       @* 編集画面へ行くボタン *@
+                            @* ノートと鉛筆のアイコン（bi-pencil-square）を文字の左側に配置 *@
+                            <i class="bi bi-pencil-square me-1"></i> 編集する
                         </a>
+
+                        @* 詳細確認を終えて、安全にタスク一覧画面（Indexアクション）へ戻るための、すっきりとした枠線仕立てのボタン *@
                         <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                            一覧に戻る       @* 一覧に行くボタン *@
+                            一覧に戻る
                         </a>
                     </div>
                 </div>
+
+                @* カードの最下部（フッター）部分。文字色を薄グレー（text-muted）の小さめ（small）にし、左右の両端に綺麗に振り分ける *@
                 <div class="card-footer text-muted small d-flex justify-content-between">
-                    <span>作成: @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")</span>      @* 作成日表示 *@
-                    <span>最終更新: @Model.UpdatedAt.ToString("yyyy/MM/dd HH:mm")</span>        @* 最終更新日表示 *@
+                    @* 親クラスから継承したデータではなく、この詳細画面用ViewModel（TaskDetailsViewModel）が追加で保持している「作成日時」を分単位まで出力 *@
+                    <span>作成: @Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")</span>
+                    @* この詳細画面用ViewModelが追加で保持している「最終更新日時」を分単位まで出力 *@
+                    <span>最終更新: @Model.UpdatedAt.ToString("yyyy/MM/dd HH:mm")</span>
                 </div>
             </div>
         </div>

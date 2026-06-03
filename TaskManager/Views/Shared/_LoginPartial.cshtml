@@ -1,33 +1,50 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿@* ASP.NET Core標準のユーザー認証機能（Identity）の仕組みを利用するための名前空間をインポート *@
+@using Microsoft.AspNetCore.Identity
+@* ログイン状態の確認やログアウト処理を担当する「SignInManager」という部品を外部から注入（インポート）して使えるようにする *@
 @inject SignInManager<IdentityUser> SignInManager
+@* 登録されているユーザー情報の検索や管理を担当する「UserManager」という部品を外部から注入（インポート）して使えるようにする *@
 @inject UserManager<IdentityUser> UserManager
 
+@* ログイン・ログアウト関連のメニュー項目を縦並びで配置するためのリスト要素（外枠）を開始 *@
 <ul class="nav flex-column">
+    @* 💡条件分岐：もし現在アクセスしているユーザーが「すでにログイン完了している状態」であれば真（true）となる処理 *@
     @if (SignInManager.IsSignedIn(User))
     {
+        @* ログイン中のユーザー名を表示するためのメニュー項目（リスト項目） *@
         <li class="nav-item">
-            @* ログイン中のユーザー名を表示 *@
+            @* ログインしているユーザーの「メールアドレス（ユーザー名）」を画面に表示。長すぎる文字列でも枠をはみ出さないように自動改行（text-break）を設定 *@
             <span class="nav-link text-secondary small p-3 text-break">@User.Identity?.Name</span>
         </li>
+
+        @* 「ログアウト」ボタンを配置するためのメニュー項目（リスト項目） *@
         <li class="nav-item">
+            @* ログアウト処理を実行するための送信フォーム。ログアウトが成功した後は、アプリのトップであるタスク一覧画面（TaskItemsのIndex）へと戻るように遷移先を設定 *@
             <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "TaskItems", new { area = "" })">
+                @* フォームを送信して安全にログアウトを実行するためのボタン。見た目はサイドバーに馴染む白文字（text-white）の太字、横幅いっぱいの左寄せに設定 *@
                 <button type="submit" class="nav-link btn btn-link text-white fw-bold w-100 text-start p-3">
+                    @* 箱から矢印が飛び出している「ログアウト」を意味するアイコンを配置 *@
                     <i class="bi bi-box-arrow-right me-2"></i>ログアウト
                 </button>
             </form>
         </li>
     }
+    @* ユーザーが「まだログインしていない状態」であればこちらを実行 *@
     else
     {
+        @* ログインしていない場合に表示する「新規登録」メニュー項目（リスト項目） *@
         <li class="nav-item">
-            @* ログイン前の「新規登録」ボタン *@
+            @* クリックするとIdentity標準の「ユーザー新規登録画面（Register.cshtml）」へとジャンプする、白文字・太字のリンク *@
             <a class="nav-link text-white fw-bold p-3" asp-area="Identity" asp-page="/Account/Register">@* 新規アカウント登録へ *@
+                @* 人型にプラスマークがついた「新規アカウント登録」を意味するアイコンを配置 *@
                 <i class="bi bi-person-plus me-2"></i>新規アカウント登録
             </a>
         </li>
+
+        @* ログインしていない場合に表示する「ログイン」メニュー項目（リスト項目） *@
         <li class="nav-item">
-            @* ログイン前の「ログイン」ボタン *@
-            <a class="nav-link text-white fw-bold p-3" asp-area="Identity" asp-page="/Account/Login">@* ログイン画面へ *@
+            @* クリックするとIdentity標準の「ログイン画面（Login.cshtml）」へとジャンプする、白文字・太字のリンク *@
+            <a class="nav-link text-white fw-bold p-3" asp-area="Identity" asp-page="/Account/Login">
+                @* 箱の中に矢印が吸い込まれている「ログイン」を意味するアイコンを配置  *@
                 <i class="bi bi-box-arrow-in-right me-2"></i>ログイン
             </a>
         </li>

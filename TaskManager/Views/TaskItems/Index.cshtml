@@ -1,68 +1,125 @@
-﻿@model TaskManager.ViewModels.TaskIndexViewModel
+﻿@* 一覧画面で扱う「複数の検索条件」や「検索結果のタスクリスト」をまとめて受け取るための箱として TaskIndexViewModel を指定 *@
+@model TaskManager.ViewModels.TaskIndexViewModel
+@* 状態や優先度の定数（TaskStatuses.Completed など）を画面内でそのまま扱うために名前空間をインポート *@
 @using TaskManager.Models
 
+@* 画面上部のタイトルエリア。下部にうっすらと境界線（border-bottom）を敷いて綺麗に区切る *@
 <div class="pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2 fw-bold">タスク一覧</h1>   @* ページタイトル *@
+    @* 太字（fw-bold）の大きな文字で「タスク一覧」という見出しを表示 *@
+    <h1 class="h2 fw-bold">タスク一覧</h1>
 </div>
 
-<div class="card mb-4 bg-light border-dark shadow-sm">      @* 検索欄 *@
+@* 検索条件をスッキリまとめるため、背景を薄グレー（bg-light）、枠線を黒、軽い影をつけたカード枠を作成 *@
+<div class="card mb-4 bg-light border-dark shadow-sm">
+    @* カードの内側に適切な余白を持たせる本体領域 *@
     <div class="card-body">
+        @* 検索ボタンが押されたとき、URLの後ろに検索条件をくっつけて送る方式（method="get"）のフォームを開始 *@
         <form asp-action="Index" method="get">
+            @* フォーム内の配置が崩れないよう、適度な隙間（g-3）を開けながら横並びにするグリッドシステムの開始 *@
             <div class="row g-3">
+                @* 画面の4分の1（col-md-3）の幅を使用する、キーワード検索グループ *@
                 <div class="col-md-3">
+                    @* 小さめの太字で「キーワード」とラベルを表示 *@
                     <label class="small fw-bold">キーワード</label>
-                    <input type="text" name="SearchString" class="form-control form-control-sm" value="@Model.SearchString" placeholder="タイトル検索..." />      @* 入力欄に表示させる *@
+                    @* ユーザーが入力したキーワードを保持するボックス。ViewModelから現在適用されている検索文字を初期値として引き継いで表示 *@
+                    <input type="text" name="SearchString" class="form-control form-control-sm" value="@Model.SearchString" placeholder="タイトル検索..." />
                 </div>
+
+                @* 画面の4分の1（col-md-3）の幅を使用する、カテゴリ選択グループ *@
                 <div class="col-md-3">
+                    @* 小さめの太字で「カテゴリ」とラベルを表示 *@
                     <label class="small fw-bold">カテゴリ</label>
+
+                    @* カテゴリを選択するドロップダウンボックス。選択値は「Category」という名前でサーバーへ送信される *@
                     <select name="Category" class="form-select form-select-sm">
-                        <option value="">すべて</option>       @* 初期値 *@
-                        @foreach (var c in Model.Categories)        @* カテゴリ名を重複無しでプルダウンに表示 *@
+                        @* 絞り込みをしない場合の、初期状態である「すべて」の選択肢 *@
+                        <option value="">すべて</option>
+                        @* 繰り返し処理：現在データベース内に存在する重複のないカテゴリ名の一覧を1つずつ取り出してループ *@
+                        @foreach (var c in Model.Categories)
                         {
+                            @* 選択肢（option）を作り、もし現在ユーザーが選択中のカテゴリ（Model.Category）と一致した場合は、明示的に「selected」を付与して選択状態を維持する *@
                             <option value="@c" selected="@(Model.Category == c ? "selected" : null)">@c</option>
                         }
                     </select>
                 </div>
+
+                @* 画面の4分の1（col-md-3）の幅を使用する、状態選択グループ *@
                 <div class="col-md-3">
+                    @* 小さめの太字で「状態」とラベルを表示 *@
                     <label class="small fw-bold">状態</label>
+                    
+                    @* 進捗状況（ステータス）を選択するドロップダウンボックス *@
                     <select name="Status" class="form-select form-select-sm">
+                        @* 絞り込みをしない場合の初期選択肢 *@
                         <option value="">すべて</option>
+                        @* 未着手の選択肢。現在この条件で検索中であれば三項演算子で selected 属性を付与して選択状態を維持 *@
                         <option value="@TaskStatuses.NotStarted" selected="@(Model.Status == TaskStatuses.NotStarted ? "selected" : null)">@TaskStatuses.NotStarted</option>
+                        @* 進行中の選択肢。現在この条件で検索中であれば selected 属性を付与して選択状態を維持 *@
                         <option value="@TaskStatuses.InProgress" selected="@(Model.Status == TaskStatuses.InProgress ? "selected" : null)">@TaskStatuses.InProgress</option>
+                        @* 完了の選択肢。現在この条件で検索中であれば selected 属性を付与して選択状態を維持 *@
                         <option value="@TaskStatuses.Completed" selected="@(Model.Status == TaskStatuses.Completed ? "selected" : null)">@TaskStatuses.Completed</option>
                     </select>
                 </div>
+
+                @* 画面の4分の1（col-md-3）を使用。隣の入力欄と高さを合わせるため、下寄せ（align-items-end）にして少し微調整を施した領域 *@
                 <div class="col-md-3 d-flex align-items-end pb-1">
+                    @* チェックボックス用の配置グループ *@
                     <div class="form-check">
+                        @* 完了タスクを隠すためのチェックボックス。チェック状態（Model.HideCompleted）が真であれば、HTML側に checked 属性を書き込んでチェックを入れる *@
                         <input class="form-check-input border-dark" type="checkbox" name="HideCompleted" value="true" id="hideCompleted" @(Model.HideCompleted ? "checked" : "")>
+                        
+                        @* チェックボックスの横に並べる、小さめ太字のラベルテキスト *@
                         <label class="form-check-label small fw-bold" for="hideCompleted">
                             完了済みを非表示にする
                         </label>
                     </div>
                 </div>
 
+                @* 画面の4分の1（col-md-3）の幅を使用する、期限日指定グループ *@
                 <div class="col-md-3">
+                    @* 小さめの太字で「期限（〜まで）」とラベルを表示 *@
                     <label class="small fw-bold">期限（〜まで）</label>
+                    @* 日付選択用（カレンダー式）の入力ボックス。現在指定されている検索期限日があれば、その年月日形式に変換して初期表示する *@
                     <input type="date" name="DueDateBefore" class="form-control form-control-sm" value="@Model.DueDateBefore?.ToString("yyyy-MM-dd")" />
                 </div>
+
+                @* 画面の4分の1（col-md-3）の幅を使用する、優先度選択グループ *@
                 <div class="col-md-3">
+                    @* 小さめの太字で「優先度」とラベルを表示 *@
                     <label class="small fw-bold">優先度</label>
+
+                    @* 優先度の3段階を選択するドロップダウンボックス *@
                     <select name="Priority" class="form-select form-select-sm">
+                        @* 絞り込みをしない場合の初期選択肢 *@
                         <option value="">すべて</option>
+                        @* 優先度「高」の選択肢。現在この条件で検索中であれば selected 属性を付与 *@
                         <option value="@TaskPriority.High" selected="@(Model.Priority == @TaskPriority.High ? "selected" : null)">@TaskPriority.High</option>
+                        @* 優先度「中」の選択肢。現在この条件で検索中であれば selected 属性を付与 *@
                         <option value="@TaskPriority.Medium" selected="@(Model.Priority == @TaskPriority.Medium ? "selected" : null)">@TaskPriority.Medium</option>
+                        @* 優先度「低」の選択肢。現在この条件で検索中であれば selected 属性を付与 *@
                         <option value="@TaskPriority.Low" selected="@(Model.Priority == @TaskPriority.Low ? "selected" : null)">@TaskPriority.Low</option>
                     </select>
                 </div>
+
+                @* 画面の4分の1（col-md-3）の幅を使用する、並び順指定グループ *@
                 <div class="col-md-3">
+                    @* 小さめの太字で「期限の並び順」とラベルを表示 *@
                     <label class="small fw-bold">期限の並び順</label>
+
+                    @* 昇順（期日が近い順）か降順（遠い順）かを選択するドロップダウンボックス *@
                     <select name="SortOrder" class="form-select form-select-sm">
+                        @* 昇順の選択肢。現在の一覧の並び順の設定が昇順であれば selected 属性を付与 *@
                         <option value="@SortOrders.Ascending" selected="@(Model.SortOrder == SortOrders.Ascending ? "selected" : null)">昇順（近い順）</option>
+                        @* 降順の選択肢。現在の一覧の並び順の設定が降順であれば selected 属性を付与 *@
                         <option value="@SortOrders.Descending" selected="@(Model.SortOrder == SortOrders.Descending ? "selected" : null)">降順（遠い順）</option>
                     </select>
                 </div>
+
+                @* 画面の4分の1（col-md-3）を使用。2つのボタンを綺麗に横並び（gap-2）にし、一番下に合わせて配置する領域 *@
                 <div class="col-md-3 d-flex align-items-end gap-2">
+                    @* 選択されたすべての検索条件をサーバー（C#）へ送信して一覧を再取得するための、横幅いっぱいに広がる黒い検索ボタン *@
                     <button type="submit" class="btn btn-dark btn-sm fw-bold flex-grow-1">検索実行</button>
+                    @* 全ての検索条件を白紙（初期状態）に戻すため、同じIndex画面へ条件なしでリロードをかけるためのクリアボタン（リンク） *@
                     <a asp-action="Index" class="btn btn-outline-secondary btn-sm fw-bold">クリア</a>
                 </div>
             </div>
@@ -70,37 +127,64 @@
     </div>
 </div>
 
+@* 検索結果のタスクデータを綺麗に並べるための、枠線付き（table-bordered）でマウスを載せると行の色が変わる（table-hover）テーブル（表）の開始 *@
 <table class="table table-bordered table-hover shadow-sm">
+    @* 表のヘッダー（見出し行）部分を黒背景（table-dark）に指定 *@
     <thead class="table-dark">
-        <tr>        @* 見出し(列名) *@
+        @* 見出し項目の横一行 *@
+        <tr>       
+            @* タイトルの列名見出し *@
             <th>タイトル</th>
+            @* カテゴリの列名見出し *@
             <th>カテゴリ</th>
+            @* 期限日の列名見出し *@
             <th>期限</th>
+            @* 状態の列名見出し（テキストを中央揃えにする） *@
             <th class="text-center">状態</th>
+            @* 優先度の列名見出し（テキストを中央揃えにする） *@
             <th class="text-center">優先度</th>
+            @* 各種ボタンを並べるための、横幅を280pxに固定した操作列の見出し（中央揃え） *@
             <th style="width: 280px;" class="text-center">操作</th>
         </tr>
     </thead>
+
+    @* 検索結果のデータ行を並べるテーブルの本体部分 *@
     <tbody>
+        @* 繰り返し処理：サーバーから取得した絞り込み済みのタスクデータ（Model.Tasks）の数だけ、行を繰り返し生成する *@
         @foreach (var item in Model.Tasks)
         {
-            <tr>        @* 一覧に並べる *@
+            @* タスク1件分を表す、横1行（trタグ） *@
+            <tr>       
+                @* タスクのタイトルを、行の上下中央（align-middle）に配置して出力 *@
                 <td class="align-middle">@item.Title</td>
+                @* タスクのカテゴリを、行の上下中央に配置して出力 *@
                 <td class="align-middle">@item.Category</td>
+                @* 期限日時データから時刻を取り除き、「年/月/日」の短い形式に変換して上下中央に配置して出力 *@
                 <td class="align-middle">@item.DueDate.ToShortDateString()</td>
+                @* 進捗状況（未着手・進行中など）を、左右中央（text-center）かつ上下中央（align-middle）に配置して出力 *@
                 <td class="text-center align-middle">@item.Status</td>
+                @* 優先度（高・中・低）を、左右中央かつ上下中央に配置して出力 *@
                 <td class="text-center align-middle">@item.Priority</td>
+
+                @* 操作用のアクションボタンを並べる、左右中央揃えのセル *@
                 <td class="text-center">
+                    @* もしタスクの状態が「完了（Completed）」以外の（＝未完了の）状態のときだけ真（true）となる処理 *@
                     @if (item.Status != TaskStatuses.Completed)
-                    {       @* 完了にする *@
+                    {      
+                        @* 「完了にする」ボタンを押した際、コントローラーの Complete 処理（POST）へこのタスクIDを引き渡して送信するフォーム。誤操作を防ぐためのJavaScript確認ダイアログ（confirm）付き *@
                         <form asp-action="Complete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('このタスクを完了にしてよろしいですか？');">
+                            @* セキュリティ対策（CSRF対策）。外部からの不正な偽装アクセスをブロックするためのセキュリティ用トークンをフォーム内に埋め込む *@
                             @Html.AntiForgeryToken()
+                            @* フォームを送信してタスクを一発で完了状態にするための、緑色の枠線仕立てのボタン *@
                             <button type="submit" class="btn btn-outline-success btn-sm">完了にする</button>
                         </form>
                     }
-                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm">編集</a>             @* 編集へ行くボタン *@
-                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">詳細</a>     @* 詳細へ行くボタン *@
-                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">削除</a>         @* 削除へ行くボタン *@
+                    @* このタスクを書き換えるため、編集画面（Editアクション）へ現在のタスクID（asp-route-id）を持たせて移動するボタン（リンク） *@
+                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-dark btn-sm">編集</a>
+                    @* メモ内容や詳細日時を見るため、詳細画面（Detailsアクション）へ現在のタスクIDを持たせて移動するボタン（リンク） *@
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-secondary btn-sm">詳細</a>
+                    @* タスクを削除するための最終確認画面（Deleteアクション）へ、現在のタスクIDを持たせて移動する赤いボタン（リンク） *@
+                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">削除</a>
                 </td>
             </tr>
         }
