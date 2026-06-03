@@ -1,4 +1,12 @@
-﻿@using Microsoft.AspNetCore.Identity
+﻿
+@* 自動生成されたものです *@
+@* 各画面（.cshtml）ごとに毎回同じ設定を書く手間を省くため、共通のインポートルールをここに集約しています。 *@
+
+@* 画面（Razorビュー）の中で、ユーザーのログイン状態やアカウント情報（IdentityUserなど）を直接扱えるようにするための名前空間を共通インポート *@
+@using Microsoft.AspNetCore.Identity
+@* ログイン画面や登録画面が格納されている「Identity」エリアの共通プログラムを使えるようにするための名前空間をインポート *@
 @using TaskManager.Areas.Identity
+@* Identityエリア内の各ページ（LoginModelやRegisterModelなど）のデータ構造に、各画面から直接アクセスできるようにするための名前空間をインポート *@
 @using TaskManager.Areas.Identity.Pages
+@* ASP.NET Core専用の強力な機能「タグヘルパー（asp-for、asp-action、asp-validation-forなど）」を、アプリ内のすべての画面で一斉に使用可能にするための宣言 *@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

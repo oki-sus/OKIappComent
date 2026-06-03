@@ -1,76 +1,124 @@
-﻿@model TaskManager.Models.TaskItem
+﻿@* この画面で入力・送信するデータの模型（エンティティ）として TaskItem クラスを指定 *@
+@model TaskManager.Models.TaskItem
+@* ステータスや優先度の定数（TaskStatuses など）を画面内でそのまま使うために名前空間をインポート *@
 @using TaskManager.Models
 
 @{  
-    @* ページ名 *@
+    @* 共通レイアウト枠（_Layout.cshtml）のタブ名などに表示させるためのページタイトルを設定 *@
     ViewData["Title"] = "タスク作成";
 }
 
-@* 新規タスク登録画面 *@
-
+@* 新規タスク登録画面のメインコンテナ。上部に程よい余白（mt-4）を設定 *@
 <div class="container mt-4">
+    @* グリッドシステムを開始し、フォームを配置するカード要素を水平方向の中央に寄せる *@
     <div class="row justify-content-center">
+        @* パソコンなどの大画面において、12分割中8マス分の見やすい横幅に制限する *@
         <div class="col-md-8">
+            @* 黒い枠線（border-dark）と軽い影（shadow-sm）で立体感を出したカード型の外枠を作成 *@
             <div class="card border-dark shadow-sm">
+                @* カードのヘッダー部分。背景を黒（bg-dark）、文字を白にし、太字に設定 *@
                 <div class="card-header bg-dark text-white fw-bold">
-                    <i class="bi bi-plus-circle me-2"></i>新規タスク登録       @* ページタイトル *@
+                    @* プラスマーク付きの円形アイコン（bi-plus-circle）を文字の左側に添えてタイトルを表示 *@
+                    <i class="bi bi-plus-circle me-2"></i>新規タスク登録
                 </div>
+
+                @* 入力項目を並べるカードの本体部分。背景を薄いグレー（bg-light）に設定 *@
                 <div class="card-body bg-light">
+                    @* コントローラーの Create アクション（POST）に向けてデータを送信するためのフォーム *@
                     <form asp-action="Create">
+                        @* 入力エラーが発生した際、特定の項目（タイトル等）以外に関する共通エラーをまとめて表示する赤字領域 *@
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
+                        @* フォーム内の各入力欄を綺麗に整列させるための内側グリッドの開始 *@
                         <div class="row">
+                            @* パソコンでもスマホでも横幅いっぱい（col-md-12）に広げる、タイトル入力エリアのグループ（下部に余白） *@
                             <div class="col-md-12 mb-3">
+                                @* C#側の Title プロパティに設定された [Display(Name = "タイトル")] から日本語名を自動取得して表示 *@
                                 <label asp-for="Title" class="form-label fw-bold"></label>
-                                <input asp-for="Title" class="form-control" placeholder="タスク名を入力..." />     @* 入力欄に表示させる *@
+                                @* タイトル入力用のボックス。入力欄が空のときにうっすら表示される案内テキスト（placeholder）を設定 *@
+                                <input asp-for="Title" class="form-control" placeholder="タスク名を入力..." />
+                                @* タイトルが未入力だったり文字数オーバーした際に、その場でリアルタイムに赤文字エラーを出す場所 *@
                                 <span asp-validation-for="Title" class="text-danger"></span>
                             </div>
 
+                            @* 画面の左半分（col-md-6）に配置する、カテゴリ入力エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* C#側のプロパティから日本語名（カテゴリ）を自動取得して表示するラベル *@
                                 <label asp-for="Category" class="form-label fw-bold"></label>
-                                <input asp-for="Category" class="form-control" placeholder="例: 仕事, プライベート" />       @* 入力欄に表示させる *@
+                                @* カテゴリ入力用のボックス。ユーザーが迷わないよう、入力例の案内テキストを設定 *@
+                                <input asp-for="Category" class="form-control" placeholder="例: 仕事, プライベート" />
+                                @* カテゴリの入力ルールに違反（文字数超過など）があった場合に赤文字エラーを出す場所 *@
                                 <span asp-validation-for="Category" class="text-danger"></span>
                             </div>
 
+                            @* 画面の右半分（col-md-6）に配置する、期限日入力エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* C#側のプロパティから日本語名（期限）を自動取得して表示するラベル *@
                                 <label asp-for="DueDate" class="form-label fw-bold"></label>
-                                <input asp-for="DueDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />       @* カレンダー入力できるようにして、初期値に今日の日付を入れる *@
+                                @* カレンダー選択式の入力ボックス（type="date"）。value属性を使って画面起動時の初期値に「今日の日付」を直接書き込む *@
+                                <input asp-for="DueDate" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                                @* 期限日の入力に不備がある場合に赤文字エラーを出す場所 *@
                                 <span asp-validation-for="DueDate" class="text-danger"></span>
                             </div>
 
+                            @* 画面の左半分（col-md-6）に配置する、ステータス選択エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* C#側のプロパティから日本語名（状態）を自動取得して表示するラベル *@
                                 <label asp-for="Status" class="form-label fw-bold"></label>
-                                <select asp-for="Status" class="form-select">       @* 状態の選択肢 *@
-                                    <option value="@TaskStatuses.NotStarted" selected>@TaskStatuses.NotStarted</option>     @* 初期値設定 *@
+                                @* 状態（進捗）をドロップダウン形式で選ばせるための選択ボックス *@
+                                <select asp-for="Status" class="form-select">
+                                    @* 新規登録時の標準状態として「未着手」を明示的に初期選択（selected）に指定（並び順の一番上） *@
+                                    <option value="@TaskStatuses.NotStarted" selected>@TaskStatuses.NotStarted</option>
+                                    @* 選択肢としての「進行中」を設定 *@
                                     <option value="@TaskStatuses.InProgress">@TaskStatuses.InProgress</option>
+                                    @* 選択肢としての「完了」を設定 *@
                                     <option value="@TaskStatuses.Completed">@TaskStatuses.Completed</option>
                                 </select>
+                                
+                                @* ステータス選択に不正な値が入るなどの問題があった場合にエラーを出す場所 *@
                                 <span asp-validation-for="Status" class="text-danger"></span>
                             </div>
 
+                            @* 画面の右半分（col-md-6）に配置する、優先度選択エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
+                                @* C#側のプロパティから日本語名（優先度）を自動取得して表示するラベル *@
                                 <label asp-for="Priority" class="form-label fw-bold"></label>
-                                <select asp-for="Priority" class="form-select">     @* 優先度の選択肢 *@
+                                @* 優先度をドロップダウン形式で選ばせるための選択ボックス *@
+                                <select asp-for="Priority" class="form-select">
+                                    @* 選択肢としての「低」を設定（ドロップダウンの一番上） *@
                                     <option value="@TaskPriority.Low">@TaskPriority.Low</option>
-                                    <option value="@TaskPriority.Medium" selected>@TaskPriority.Medium</option>     @* 初期値設定 *@
+                                    @* 「中」の選択肢を初期選択（selected）に固定 *@
+                                    <option value="@TaskPriority.Medium" selected>@TaskPriority.Medium</option>
+                                    @* 選択肢としての「高」を設定 *@
                                     <option value="@TaskPriority.High">@TaskPriority.High</option>
                                 </select>
+
+                                @* 優先度選択に問題があった場合にエラーを出す場所 *@
                                 <span asp-validation-for="Priority" class="text-danger"></span>
                             </div>
 
+                            @* 横幅いっぱいに広げる、詳細メモ入力エリアのグループ（下部に余白） *@
                             <div class="col-md-12 mb-3">
+                                @* C#側のプロパティから日本語名（詳細）を自動取得して表示するラベル *@
                                 <label asp-for="Detail" class="form-label fw-bold"></label>
-                                <textarea asp-for="Detail" class="form-control" rows="4" placeholder="メモなど..."></textarea>      @* 入力欄に表示させる *@
+                                @* 複数行の長文を入力できるテキストエリア。高さを縦4行分（rows="4"）に設定し、案内テキストを表示 *@
+                                <textarea asp-for="Detail" class="form-control" rows="4" placeholder="メモなど..."></textarea>
+                                @* 1000文字の上限文字数を超えて入力された場合などに、赤文字エラーを出す場所 *@
                                 <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
                         </div>
 
+                        @* 2つのボタン（登録・キャンセル）を横並びにし、ボタン同士に適度な隙間（gap-2）を開ける配置領域（上部余白付き） *@
                         <div class="d-flex gap-2 mt-3">
+                            @* フォームに打ち込まれた内容をまとめてサーバーへ送信（Submit）するための、横幅に少し余裕（px-5）を持たせた太字の黒いボタン *@
                             <button type="submit" class="btn btn-dark fw-bold px-5">
-                                <i class="bi bi-check-lg me-1"></i>登録       @* 登録ボタン *@
+                                @* チェックマークのアイコン（bi-check-lg）を文字の左側に配置 *@
+                                <i class="bi bi-check-lg me-1"></i>登録
                             </button>
+
+                            @* 登録をやめて一覧画面（TaskItemsのIndex）へと安全に戻るための、すっきりとした枠線のみのボタン（リンク） *@
                             <a asp-action="Index" class="btn btn-outline-secondary px-4">
-                                キャンセル       @* キャンセルボタン *@
+                                キャンセル
                             </a>
                         </div>
                     </form>
@@ -80,9 +128,10 @@
     </div>
 </div>
 
-@* 入力チェックライブラリを読み込む *@
+@* 画面のHTMLを読み込み終わった後に、追加のJavaScriptを配置するスクリプトセクションを開始 *@
 @section Scripts {
     @{
+        @* 画面をリロードせず、送信ボタンを押したその場（ミリ秒）で高速に入力チェック（バリデーション）を行う共通の部品スクリプトを合体して読み込む *@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

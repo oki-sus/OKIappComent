@@ -1,118 +1,145 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿// Entity Framework Coreを使って非同期でのデータ取得（ToListAsyncなど）を行うための名前空間をインポート
+using Microsoft.EntityFrameworkCore;
+// データベース接続クラス（ApplicationDbContext）が定義されている場所をインポート
 using TaskManager.Data;
+// タスクのデータモデル（TaskItem）や定数クラスが定義されている場所をインポート
 using TaskManager.Models;
+// 画面表示用の箱（TaskBaseViewModelなど）が定義されている場所をインポート
 using TaskManager.ViewModels;
 
+// データを処理する仕組み（モデル層）であることを示す名前空間の定義
 namespace TaskManager.Models
 {
-    public class TaskService
+	// コントローラーの代わりに、データの加工や検索ロジックなどの頭脳部分を一手に引き受けるサービスクラスの定義
+	public class TaskService
     {
-        // DBにアクセスするための窓口を保持する変数
-        private readonly ApplicationDbContext _context;
-        // DBにアクセスするための窓口を保持するコンストラクタ
-        public TaskService(ApplicationDbContext context)
+		// データベースと通信するための窓口をクラス内で保持するための非公開変数。readonlyで安全性を確保
+		private readonly ApplicationDbContext _context;
+		// コントローラーなどから、現在動いているDB接続窓口（context）を受け取るためのコンストラクタ
+		public TaskService(ApplicationDbContext context)
         {
-            _context = context;
+			// 受け取った接続窓口をクラスの変数にセットして、クラス内のすべてのメソッドから使えるようにする
+			_context = context;
         }
 
-        public async Task<bool> LoadTaskIntoViewModelAsync(TaskBaseViewModel vm, int? id, string? userId)
+		// 指定されたタスクIDのデータを安全に取得し、各画面（編集、詳細、削除）用のViewModelに中身を移し替える共通メソッド
+		public async Task<bool> LoadTaskIntoViewModelAsync(TaskBaseViewModel vm, int? id, string? userId)
         {
-            // タスクのIdかユーザーIdのどちらかが空だった場合処理を中断
-            if (id == null || string.IsNullOrEmpty(userId)) return false;
+			// ガード節。URLのタスクIDが空、または現在ログインしているユーザーのIDが取れない場合は即座に処理を中断（失敗を返す）
+			if (id == null || string.IsNullOrEmpty(userId)) return false;
 
-			//Idが一致しているデータをデータベースから持ってくる
+			// 指定されたタスクIDであり、かつ「現在ログイン中のユーザーが作ったタスク」であるレコードをDBから非同期で1件検索
 			var foundTask = await _context.TaskItems
                 .FirstOrDefaultAsync(m => m.Id == id && m.CreatedBy == userId);
-            
-            // 見つからなかったらエラーを出す
-            if (foundTask == null)
+
+			// 該当するタスクがデータベース内に見つからなかった（または他人のタスクだった）場合の処理
+			if (foundTask == null)
             {
-                return false;
+				// 呼び出し元のコントローラーに対して、データがなかったことを示す「false（失敗）」を返す
+				return false;
             }
 
-            vm.MapFromEntity(foundTask);
+			// 土台となる共通項目（ID、タイトル、カテゴリ、期限、状態、優先度、詳細メモ）をViewModelに一括コピーする
+			vm.MapFromEntity(foundTask);
 
-            // もし詳細画面用（TaskDetailsViewModel）なら、追加で日時も詰め替える
-            if (vm is TaskDetailsViewModel detailsVm)
+			// パターンマッチング。もし今処理しているViewModelの正体が「詳細画面用（TaskDetailsViewModel）」だった場合の処理
+			if (vm is TaskDetailsViewModel detailsVm)
             {
-                detailsVm.CreatedAt = foundTask.CreatedAt;
-                detailsVm.UpdatedAt = foundTask.UpdatedAt;
+				// 共通項目に加えて、詳細画面に必要な「作成日時」を詰め替える
+				detailsVm.CreatedAt = foundTask.CreatedAt;
+				// 共通項目に加えて、詳細画面に必要な「最終更新日時」を詰め替える
+				detailsVm.UpdatedAt = foundTask.UpdatedAt;
             }
-            // もし編集画面用（TaskEditViewModel）なら、追加で作成日時も詰め替える
-            else if (vm is TaskEditViewModel editVm)
+			// もしViewModelの正体が詳細画面用ではなく「編集画面用（TaskEditViewModel）」だった場合の処理
+			else if (vm is TaskEditViewModel editVm)
             {
-                editVm.CreatedAt = foundTask.CreatedAt;
+				// 編集時に作成日時が消えてしまうのを防ぐため、追加で「作成日時」を詰め替える
+				editVm.CreatedAt = foundTask.CreatedAt;
             }
 
-            return true;
+			// すべてのデータの詰め替えが安全かつ正常に完了したため、「true（成功）」を返す
+			return true;
         }
 
-        // 一覧画面用のデータをViewModelにロードするメソッド
-        public async Task LoadTaskIndexDataAsync(TaskIndexViewModel vm, string userId)
+		// 一覧画面（Index）に表示するための、検索ドロップダウン用カテゴリリストと、絞り込み済みのタスク一覧を読み込むメソッド
+		public async Task LoadTaskIndexDataAsync(TaskIndexViewModel vm, string userId)
         {
-            // ユーザーIdがなければ何もせず処理を終了させる
-            if (string.IsNullOrEmpty(userId))
+			// ユーザーIDが空っぽだった場合は、処理を継続できないため何もせずメソッドを即座に終了する
+			if (string.IsNullOrEmpty(userId))
             {
                 return;
             }
 
-            // カテゴリ一覧の取得
-            vm.Categories = await _context.TaskItems
-                .Where(t => t.CreatedBy == userId && !string.IsNullOrEmpty(t.Category))
-                .Select(t => t.Category)
-                .Distinct()     // 重複をカット
-                .ToListAsync();
+			// 一覧画面の上部にある「カテゴリ絞り込み用ドロップダウン」に表示するための、選択肢リストをDBから作成
+			vm.Categories = await _context.TaskItems
+				// 「自分が作ったタスク」であり、かつ「カテゴリ名が空ではない」データだけを対象に絞り込む
+				.Where(t => t.CreatedBy == userId && !string.IsNullOrEmpty(t.Category))
+				// タスク全体ではなく、カテゴリ名の文字列だけをピンポイントで切り抜く
+				.Select(t => t.Category)
+				// 重複している同じカテゴリ名（例：「仕事」が何個もある状態）を1つにまとめる
+				.Distinct()
+				// 条件に合う重複なしのカテゴリ名リストを、非同期で実際にデータベースから取得してViewModelに格納する
+				.ToListAsync();
 
-            // タスク一覧を取得するクエリの組み立て
-            // DBへ命令を送る準備
-            var query = _context.TaskItems
+			// 遅延実行の準備。まだデータベースに命令は送らず、C#の内部で「SQLの土台（条件文）」を組み立て始める
+			// まずは「自分が作ったタスクであること」という絶対条件を設定し、後から条件を追加できる形（AsQueryable）にする
+			var query = _context.TaskItems
                 .Where(t => t.CreatedBy == userId)
                 .AsQueryable();
 
-            // 検索フィルタの適用
-            // キーワード
-            if (!string.IsNullOrEmpty(vm.SearchString))
+			// ここからのif文は、画面の検索フォームでユーザーが条件を入力した時だけ、条件文を連結していく
+			// ユーザーが検索窓にキーワードを打ち込んでいた場合の処理
+			if (!string.IsNullOrEmpty(vm.SearchString))
             {
-                query = query.Where(t => t.Title.Contains(vm.SearchString));
+				// 「タイトルにそのキーワードを部分一致（Contains）で含んでいること」という条件をクエリに付け足す
+				query = query.Where(t => t.Title.Contains(vm.SearchString));
             }
 
-            // カテゴリ
-            if (!string.IsNullOrEmpty(vm.Category))
+			// ユーザーが検索ドロップダウンで特定のカテゴリを選択していた場合の処理
+			if (!string.IsNullOrEmpty(vm.Category))
             {
-                query = query.Where(t => t.Category == vm.Category);
+				// 「カテゴリ名が完全に一致していること」という条件をクエリに付け足す
+				query = query.Where(t => t.Category == vm.Category);
             }
 
-            // 状態
-            if (!string.IsNullOrEmpty(vm.Status))
+			// ユーザーが検索ドロップダウンでステータス（未着手・進行中など）を選択していた場合の処理
+			if (!string.IsNullOrEmpty(vm.Status))
             {
-                query = query.Where(t => t.Status == vm.Status);
+				// 「進行状態が完全に一致していること」という条件をクエリに付け足す
+				query = query.Where(t => t.Status == vm.Status);
             }
 
-            // 優先度
-            if (!string.IsNullOrEmpty(vm.Priority))
+			// ユーザーが検索ドロップダウンで優先度（高・中・低）を選択していた場合の処理
+			if (!string.IsNullOrEmpty(vm.Priority))
             {
-                query = query.Where(t => t.Priority == vm.Priority);
+				// 「優先度の設定が完全に一致していること」という条件をクエリに付け足す
+				query = query.Where(t => t.Priority == vm.Priority);
             }
 
-            // 期限（以前）
-            if (vm.DueDateBefore.HasValue)
+			// ユーザーがカレンダー等で期限日の条件（〇〇日以前）を指定していた場合の処理
+			if (vm.DueDateBefore.HasValue)
             {
-                query = query.Where(t => t.DueDate <= vm.DueDateBefore.Value);
+				// 「タスクの期限日が、指定された日付以下（それより前）であること」という条件をクエリに付け足す
+				query = query.Where(t => t.DueDate <= vm.DueDateBefore.Value);
             }
 
-            // 完了済みを非表示にするフラグ
-            if (vm.HideCompleted)
+			// ユーザーが画面の「完了済みを非表示にする」チェックボックスにチェックを入れていた場合の処理
+			if (vm.HideCompleted)
             {
-                query = query.Where(t => t.Status != TaskStatuses.Completed);
+				// 「ステータスが完了（Completed）ではないもの」という条件をクエリに付け足す
+				query = query.Where(t => t.Status != TaskStatuses.Completed);
             }
 
-            // 並び替え
-            query = vm.SortOrder == SortOrders.Descending
-                ? query.OrderByDescending(t => t.DueDate)
-                : query.OrderBy(t => t.DueDate);
+			// 三項演算子を使って並び替え順を判定。並び替えの設定が「降順（Descending）」だった場合の処理
+			query = vm.SortOrder == SortOrders.Descending
+				// 期限日が遅い順（カレンダーの未来の日付順）に並べ替える指示をクエリに付け足す
+				? query.OrderByDescending(t => t.DueDate)
+				// 降順ではない（昇順：Ascending）なら、期限日が近い順（今日明日のタスクが上に来る順）に並べ替える指示を足す
+				: query.OrderBy(t => t.DueDate);
 
-            // 結果をViewModelのTasksに詰め込む
-            vm.Tasks = await query.ToListAsync();
+			// 【ここで初めて本物のSQLが自動生成され、一度だけDBへリクエストが飛ぶ】
+			// 今まで組み立ててきたすべての条件に合致するタスク一覧を非同期で一括取得し、一覧画面用の箱（vm.Tasks）に詰め込む
+			vm.Tasks = await query.ToListAsync();
         }
 
     }

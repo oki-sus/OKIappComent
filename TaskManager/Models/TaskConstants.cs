@@ -1,6 +1,7 @@
 ﻿namespace TaskManager.Models
 {
     // リテラル値を定数(文字)で定義
+    // 言葉を定数文字にして入れることで間違いが減ったり、変更が簡単になる
 
     // 状態を管理する定数
     public static class TaskStatuses

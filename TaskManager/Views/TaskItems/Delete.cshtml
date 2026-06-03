@@ -1,47 +1,74 @@
-﻿@model TaskManager.ViewModels.TaskDeleteViewModel
+﻿@* 削除画面に表示するデータを受け取るための専用の箱として TaskDeleteViewModel クラスを指定 *@
+@model TaskManager.ViewModels.TaskDeleteViewModel
 
 @{
-    @* ページ名 *@
+    @* 共通レイアウト枠（_Layout.cshtml）のタブ名などに表示させるためのページタイトルを設定 *@
     ViewData["Title"] = "タスクの削除";
 }
 
-@* タスク削除画面 *@
-
+@* タスク削除確認画面のメインコンテナ。上部に程よい余白（mt-4）を設定 *@
 <div class="container mt-4">
+    @* グリッドシステムを開始し、削除確認のカード要素を水平方向の中央に寄せる *@
     <div class="row justify-content-center">
+        @* 警告が目に入りやすくコンパクトに見えるよう、横幅を12分割中6マス分に制限する *@
         <div class="col-md-6">
+            @* 削除という重大な操作の警告を強調するため、赤い枠線（border-danger）と軽い影（shadow-sm）をつけたカード枠を作成 *@
             <div class="card border-danger shadow-sm">
+                @* カードのヘッダー部分。背景を危険を知らせる赤（bg-danger）、文字を白にし、太字に設定 *@
                 <div class="card-header bg-danger text-white fw-bold">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i>タスクの削除確認        @* ページタイトル *@
+                    @* 注意を促すための「！」マークがついた三角形の警告アイコン（bi-exclamation-triangle-fill）を配置してタイトルを表示 *@
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>タスクの削除確認
                 </div>
-                <div class="card-body bg-light">
-                    <p class="text-center fw-bold text-danger mb-4">このタスクを完全に削除しますか？<br>この操作は取り消せません。</p>       @* 警告文 *@
 
+                @* 削除対象のデータやボタンを配置するカードの本体部分。背景を薄いグレー（bg-light）に設定 *@
+                <div class="card-body bg-light">
+                    @* ユーザーへ強い注意を促すため、中央揃え（text-center）、太字（fw-bold）、赤文字（text-danger）にした警告メッセージを表示 *@
+                    <p class="text-center fw-bold text-danger mb-4">このタスクを完全に削除しますか？<br>この操作は取り消せません。</p>       @* 警告文 *@
+                    @* 削除するタスクの情報（中身）を見やすく区切るため、背景を白（bg-white）にして枠線と丸みをつけた枠を設置 *@
                     <div class="p-3 bg-white border rounded mb-4">
-                        <table class="table table-sm table-borderless mb-0">        @* タスク概要を表示 *@
+                        @* すっきり見せるため、文字を少し小さめにし（table-sm）、標準の枠線を無くした（table-borderless）テーブル（表）を開始 *@
+                        <table class="table table-sm table-borderless mb-0">
+                            @* タスクのタイトル（件名）を表示する行 *@
                             <tr>
+                                @* 項目名を薄いグレー文字（text-muted）にし、全体のバランスを取るために横幅を30%に固定 *@
                                 <th class="text-muted" style="width: 30%">タイトル</th>
+                                @* データベースから取得した、消そうとしているタスクのタイトルをここに出力 *@
                                 <td>@Model.Title</td>
                             </tr>
+
+                            @* タスクの期限日を表示する行 *@
                             <tr>
+                                @* 項目名を薄いグレー文字（text-muted）に設定 *@
                                 <th class="text-muted">期限</th>
+                                @* データベースの期限日時から、時刻を取り除いて「年/月/日」だけの短い形式（ToShortDateString）に変換して出力 *@
                                 <td>@Model.DueDate.ToShortDateString()</td>
                             </tr>
+
+                            @* タスクのカテゴリを表示する行 *@
                             <tr>
+                                @* 項目名を薄いグレー文字（text-muted）に設定 *@
                                 <th class="text-muted">カテゴリ</th>
+                                @* データベースから取得したタスクのカテゴリ名を出力 *@
                                 <td>@Model.Category</td>
                             </tr>
                         </table>
                     </div>
 
+                    @* ボタンを押した時に、コントローラーの Delete 確定処理（POST）へとデータを送信するためのフォーム *@
                     <form asp-action="Delete">
+                        @* ユーザーには見えない隠し情報（type="hidden"）として、削除するタスクの「固有ID番号」をフォーム内に仕込んでおく *@
                         <input type="hidden" asp-for="Id" />
+                        @* 2つのボタン（削除・キャンセル）を縦並びにし、ボタン幅をいっぱい（d-grid）に広げ、適度な隙間（gap-2）を開ける配置領域 *@
                         <div class="d-grid gap-2">
+                            @* フォームを送信して実際のデータ抹消処理を実行するための、太字の赤い（btn-danger）ボタン *@
                             <button type="submit" class="btn btn-danger fw-bold">
-                                <i class="bi bi-trash me-1"></i> はい、削除します       @* 削除ボタン *@
+                                @* ゴミ箱マークのアイコン（bi-trash）を文字の左側に配置 *@
+                                <i class="bi bi-trash me-1"></i> はい、削除します
                             </button>
+
+                            @* 削除を中止して、安全にタスク一覧画面（Indexアクション）へ戻るための、枠線仕立てのボタン（リンク） *@
                             <a asp-action="Index" class="btn btn-outline-secondary">
-                                キャンセルして戻る       @* キャンセルボタン *@
+                                キャンセルして戻る
                             </a>
                         </div>
                     </form>

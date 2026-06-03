@@ -1,3 +1,5 @@
+// このファイルも自動生成されたもので、一部変更して使っています
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskManager.Data;
@@ -44,12 +46,16 @@ app.MapControllerRoute(
 app.MapRazorPages()
    .WithStaticAssets();
 
-//最初の画面を自作の画面にする
+//最初の画面を自動生成の初期画面ではなく自作の画面にする
 app.MapGet("/", context =>
 {
-	// ルート（/）にアクセスが来たら、認証状態に関わらず /TaskItems へ飛ばす
+	// 標準のホームページ（Home/Index）へ行く前に割り込み、
+    // 強制的にタスク一覧画面（/TaskItems）へブラウザを一瞬で自動転送（リダイレクト）する
 	context.Response.Redirect("/TaskItems");
+	// 非同期の処理が何の問題もなく無事にすべて完了した、という合図をシステムに返す
 	return Task.CompletedTask;
 });
 
+// ここまで設定したすべての内容の通りにWEBサーバーを起動し、
+// ユーザーからのアクセスを待ち受ける（アプリの本当のスタート位置）
 app.Run();
