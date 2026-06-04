@@ -23,4 +23,12 @@
     <PackageReference Include="NuGet.Protocol" Version="7.6.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\Users\nagoya-study056\source\repos\OKIappComent\TaskManager\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\Users\nagoya-study056\source\repos\OKIappComent\TaskManager\.editorconfig" />
+  </ItemGroup>
+
 </Project>

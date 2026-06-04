@@ -1,7 +1,10 @@
 ﻿
-@* 自動生成されたもので、今回使っていません *@
+@* 自動生成されたものをそのまま使っています *@
 
+@* アプリ全体のプログラム（TaskManager）の根本にある部品を、各画面からいつでも直接呼び出せるように一括登録する設定 *@
 @using TaskManager
+@* タスクデータの模型（TaskItem）や定数（TaskStatuses）が格納されている場所（Models）を、各画面で毎回書かずにすぐ使えるように一括登録する設定 *@
 @using TaskManager.Models
+@* ASP.NET Core専用の機能「タグヘルパー（asp-for、asp-action、asp-validation-forなど）」を、アプリ内のすべての画面で一斉に使用可能にするための宣言 *@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 <a href="c:\users\nagoya-study056\source\repos\okiappcoment\taskmanager\views\_viewimports.cshtml">c:\users\nagoya-study056\source\repos\okiappcoment\taskmanager\views\_viewimports.cshtml</a>

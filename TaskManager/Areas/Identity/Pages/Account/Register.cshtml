@@ -30,20 +30,25 @@
                         @* 入力エラーが起きた際、すべての項目に関する不備（重複登録エラー等も含む）を画面上部にまとめて赤字で出す領域 *@
                         <div asp-validation-summary="All" class="text-danger small mb-3" role="alert"></div>
 
-                        <div class="form-group mb-3">
-                            <label class="small fw-bold text-dark">メールアドレス</label>
-                            <input asp-for="Input.Email" class="form-control border-dark shadow-sm" autocomplete="username" placeholder="name@example.com" />
-                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
-                        </div>
-
                         @* メールアドレス入力エリアのグループ（下部に余白を確保） *@
                         <div class="form-group mb-3">
                             @* メールアドレス用のラベル。少し小さめの太字で濃い目の文字色に設定 *@
-                            <label class="small fw-bold text-dark">パスワード</label>
-                            @* メールアドレスの入力ボックス。枠線を濃くし、軽い影を付け、自動補完を有効にし、プレースホルダーを表示 *@
-                            <input asp-for="Input.Password" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
+                            <label class="small fw-bold text-dark">メールアドレス</label>
+                            @* メールアドレスの入力ボックス。枠線を濃くし、軽い影を付け、自動補完を有効にし、入力例を表示 *@
+                            <input asp-for="Input.Email" class="form-control border-dark shadow-sm" autocomplete="username" placeholder="name@example.com" />
                             
                             @* 入力されたメールアドレスの形式が違う場合や、未入力の場合にその場で赤文字のエラーを出す場所 *@
+                            <span asp-validation-for="Input.Email" class="text-danger small"></span>
+                        </div>
+
+                        @* パスワード入力エリアのグループ（下部に余白を確保） *@
+                        <div class="form-group mb-3">
+                            @* パスワード用のラベル。少し小さめの太字で濃い目の文字色に設定 *@
+                            <label class="small fw-bold text-dark">パスワード</label>
+                            @* パスワードの入力ボックス。枠線を濃くし、軽い影を付け、新パスワード用の自動補完を設定し、入力例を表示 *@
+                            <input asp-for="Input.Password" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
+                            
+                            @* パスワードの入力不備がある場合にその場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.Password" class="text-danger small"></span>
                         </div>
 
@@ -150,5 +155,4 @@
             });
         });
     </script>
-
 }
