@@ -1,4 +1,5 @@
-﻿namespace TaskManager.Models
+﻿// アプリ全体で使う「決まった言葉（文字）」をまとめて用意しておく仕組み（モデル層）
+namespace TaskManager.Models
 {
     // リテラル値を定数(文字)で定義
     // 言葉を定数文字にして入れることで間違いが減ったり、変更が簡単になる
