@@ -98,7 +98,7 @@ namespace TaskManager.Controllers
 			return RedirectToAction(nameof(Index));     // 成功したらIndexへ画面切り替え
 		}
 
-		// タスク一覧画面などで「完了」チェックボタンが押されたときに動く処理
+		// タスク一覧画面で「完了」ボタンが押されたときに動く処理
 		[HttpPost]
 		// セキュリティ対策。URLやリクエストを偽造した不正なデータ書き換え命令をブロックする
 		[ValidateAntiForgeryToken]
@@ -153,7 +153,7 @@ namespace TaskManager.Controllers
 				return NotFound();
             }
 
-			// 指定されたIDのデータが自分のものだと証明され、きれいにデータが詰まったViewModelを編集画面（Edit.cshtml）に渡して表示
+			// 指定されたIDのデータが自分のものだと証明され、データが詰まったViewModelを編集画面（Edit.cshtml）に渡して表示
 			return View(vm);
         }
 

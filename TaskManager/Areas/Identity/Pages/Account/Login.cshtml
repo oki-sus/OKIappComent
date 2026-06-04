@@ -32,6 +32,7 @@
                             <label asp-for="Input.Email" class="form-label small fw-bold">メールアドレス</label>
                             @* メールアドレスの入力ボックス。枠線を濃くし、ブラウザの自動補完（ユーザー名）を有効に、入力必須として指定 *@
                             <input asp-for="Input.Email" class="form-control border-secondary" autocomplete="username" aria-required="true" />
+                            
                             @* 入力されたメールアドレスの形式が違う場合や、未入力の場合にその場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
