@@ -26,7 +26,7 @@ namespace TaskManager.Models
 		// 画面（HTML）でラベルを表示する際、プロパティ名（Title）ではなく「タイトル」という日本語で表示させる設定
 		[Display(Name = "タイトル")]
 		// データベースの最大文字数を100文字に制限し、超えた場合は指定のエラーメッセージを出す設定
-		[StringLength(100, ErrorMessage = "タイトルは100文字以内で入力してください")]
+		[StringLength(30, ErrorMessage = "タイトルは{1}文字以内で入力してください")]
 		// タスクの名前（件名）を保持するプロパティ（Nullエラー防止のため初期値に空文字を設定）
 		public string Title { get; set; } = string.Empty;
 
@@ -35,7 +35,7 @@ namespace TaskManager.Models
 		// 画面のラベル表示において「カテゴリ」という日本語名を使用する設定
 		[Display(Name = "カテゴリ")]
 		// データベースの最大文字数を50文字に制限し、超えた場合は指定のエラーメッセージを出す設定
-		[StringLength(50, ErrorMessage = "カテゴリは50文字以内で入力してください")]
+		[StringLength(15, ErrorMessage = "カテゴリは{1}文字以内で入力してください")]
 		// データベースの最大文字数を50文字に制限し、超えた場合は指定のエラーメッセージを出す設定
 		public string Category { get; set; } = string.Empty;
 
@@ -61,7 +61,7 @@ namespace TaskManager.Models
 		// 画面のラベル表示において「詳細」という日本語名を使用する設定
 		[Display(Name = "詳細")]
 		// データベースの最大文字数を1000文字に制限し、超えた場合は指定のエラーメッセージを出す設定
-		[StringLength(1000, ErrorMessage = "詳細は1000文字以内で入力してください")]
+		[StringLength(1000, ErrorMessage = "詳細は{1}文字以内で入力してください")]
 		// タスクの具体的なメモや説明文を保持するプロパティ（末尾の ? により、未入力（Null）であっても許可する）
 		public string? Detail { get; set; }
 

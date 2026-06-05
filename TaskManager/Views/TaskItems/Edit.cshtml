@@ -106,6 +106,8 @@
                                 <label asp-for="@(new TaskItem().Detail)" class="form-label fw-bold"></label>
                                 @* 複数行の長文を入力できるテキストエリア。現在登録されている詳細メモが中に表示された状態で、高さを縦4行分に設定 *@
                                 <textarea asp-for="Detail" class="form-control" rows="4"></textarea>
+                                @* 1000文字の上限文字数を超えて入力された場合などに、赤文字エラーを出す場所 *@
+                                <span asp-validation-for="Detail" class="text-danger"></span>
                             </div>
                         </div>
 

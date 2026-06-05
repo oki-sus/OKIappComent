@@ -20,14 +20,14 @@ namespace TaskManager.ViewModels
 		// 画面からの入力において、タイトルが空っぽのまま保存ボタンが押されるのを防ぐ必須項目設定
 		[Required(ErrorMessage = "必須項目です")]
 		// 画面からの入力文字数を100文字までに制限し、超過した場合は指定のエラーメッセージを出す設定
-		[StringLength(100, ErrorMessage = "タイトルは100文字以内で入力してください")]
+		[StringLength(30, ErrorMessage = "タイトルは{1}文字以内で入力してください")]
 		// タスクの名前（件名）を保持するプロパティ（初期値として空文字を設定し、Nullエラーを防ぐ）
 		public string Title { get; set; } = string.Empty;
 
 		// 画面からの入力において、カテゴリが未記入のまま送信されるのを防ぐ必須項目設定
 		[Required(ErrorMessage = "必須項目です")]
 		// 画面からの入力文字数を50文字までに制限し、超過した場合は指定のエラーメッセージを出す設定
-		[StringLength(50, ErrorMessage = "カテゴリは50文字以内で入力してください")]
+		[StringLength(15, ErrorMessage = "カテゴリは{1}文字以内で入力してください")]
 		// タスクの分類（仕事、プライベート等）を保持するプロパティ（初期値として空文字を設定）
 		public string Category { get; set; } = string.Empty;
 
@@ -45,7 +45,7 @@ namespace TaskManager.ViewModels
 		public string Priority { get; set; } = TaskPriority.Medium;
 
 		// 画面からの入力文字数を1000文字までに制限し、超過した場合は指定のエラーメッセージを出す設定
-		[StringLength(1000, ErrorMessage = "詳細は1000文字以内で入力してください")]
+		[StringLength(1000, ErrorMessage = "詳細は{1}文字以内で入力してください")]
 		// 型の後ろに ? をつけることで、詳細なメモ書きが「未入力（Null）」の状態であっても許可するプロパティ
 		public string? Detail { get; set; }
 
