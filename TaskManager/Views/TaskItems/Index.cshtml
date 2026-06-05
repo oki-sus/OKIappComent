@@ -21,8 +21,10 @@
                 <div class="col-md-3">
                     @* 小さめの太字で「キーワード」とラベルを表示 *@
                     <label class="small fw-bold">キーワード</label>
-                    @* ユーザーが入力したキーワードを保持するボックス。ViewModelから現在適用されている検索文字を初期値として引き継いで表示 *@
-                    <input type="text" name="SearchString" class="form-control form-control-sm" value="@Model.SearchString" placeholder="タイトル検索..." />
+                    @* 画面の入力値と裏側のデータモデルを連動させ、検索キーワードの保持と入力チェック（バリデーション）を一元管理する仕事を担当しています。 *@
+                    <input type="text" asp-for="SearchString" class="form-control" placeholder="タスク名を入力..." />
+                    @* エラーメッセージを出す場所 *@
+                    <span asp-validation-for="SearchString" class="text-danger small"></span>
                 </div>
 
                 @* 画面の4分の1（col-md-3）の幅を使用する、カテゴリ選択グループ *@

@@ -1,5 +1,7 @@
 ﻿// 日付型（DateTime）などの標準的なシステム機能を使用するための名前空間をインポート
 using System;
+using System.ComponentModel.DataAnnotations;
+
 // タスクのソート順（SortOrders）などの定数定義が格納されている場所をインポート
 using TaskManager.Data;
 // タスクのデータ構造（TaskItem）が定義されている場所をインポート
@@ -11,6 +13,8 @@ namespace TaskManager.ViewModels
 	// タスク一覧画面（Index.cshtml）専用の、検索条件と表示データを一括管理するためのViewModelクラスの定義
 	public class TaskIndexViewModel
     {
+		// 画面からの入力文字数を30文字までに制限し、超過した場合は指定のエラーメッセージを出す設定
+		[StringLength(30, ErrorMessage = "検索ワードは{1}文字以内で入力してください。")]
 		// ユーザーが検索窓に打ち込んだ「キーワード（検索文字列）」を保持するプロパティ（未入力時はNull）
 		public string? SearchString { get; set; }
 

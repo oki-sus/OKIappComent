@@ -25,7 +25,7 @@ namespace TaskManager.Models
 		[Required(ErrorMessage = "必須項目です")]
 		// 画面（HTML）でラベルを表示する際、プロパティ名（Title）ではなく「タイトル」という日本語で表示させる設定
 		[Display(Name = "タイトル")]
-		// データベースの最大文字数を100文字に制限し、超えた場合は指定のエラーメッセージを出す設定
+		// データベースの最大文字数を30文字に制限し、超えた場合は指定のエラーメッセージを出す設定
 		[StringLength(30, ErrorMessage = "タイトルは{1}文字以内で入力してください")]
 		// タスクの名前（件名）を保持するプロパティ（Nullエラー防止のため初期値に空文字を設定）
 		public string Title { get; set; } = string.Empty;
@@ -34,7 +34,7 @@ namespace TaskManager.Models
 		[Required(ErrorMessage = "必須項目です")]
 		// 画面のラベル表示において「カテゴリ」という日本語名を使用する設定
 		[Display(Name = "カテゴリ")]
-		// データベースの最大文字数を50文字に制限し、超えた場合は指定のエラーメッセージを出す設定
+		// データベースの最大文字数を15文字に制限し、超えた場合は指定のエラーメッセージを出す設定
 		[StringLength(15, ErrorMessage = "カテゴリは{1}文字以内で入力してください")]
 		// データベースの最大文字数を50文字に制限し、超えた場合は指定のエラーメッセージを出す設定
 		public string Category { get; set; } = string.Empty;
