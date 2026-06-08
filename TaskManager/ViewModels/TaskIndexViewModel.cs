@@ -38,6 +38,9 @@ namespace TaskManager.ViewModels
 		// 画面上の「完了済みを非表示にする」というチェックボックスのON/OFF状態（真偽値）を保持するプロパティ
 		public bool HideCompleted { get; set; }
 
+		// 期限切れ間近アラートの表示フラグ
+		public bool ShowExpiryAlert { get; set; }
+
 
 		// 画面最上部の検索用ドロップダウンの選択肢として並べるための、現在存在する重複のないカテゴリ名の一覧リスト（初期値は空のリスト）
 		public List<string> Categories { get; set; } = new();

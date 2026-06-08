@@ -9,6 +9,21 @@
     <h1 class="h2 fw-bold">タスク一覧</h1>
 </div>
 
+@* 条件付きアラート表示 *@
+@* コントローラー側から引き渡されてきた箱（Model.ShowExpiryAlert）が「True」だった場合のみ、この中のHTML要素を画面に出現させます *@
+@if (Model.ShowExpiryAlert)
+{
+    @* Bootstrap標準の黄色い警告（alert-warning）のアラート枠を表示。×ボタンで消せる設定（alert-dismissible）付き *@
+    <div class="alert alert-warning alert-dismissible fade show border-warning shadow-sm mb-4" role="alert">
+        @* アラートであることを強調するための、注意マークアイコン *@
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        @* ユーザーへ最も伝えたい警告テキストを、読みやすい太字を交えて表示 *@
+        <strong>お知らせ：</strong> 期限が迫っている未完了のタスクがあります！早めに確認して対応しましょう。
+        @* ユーザーがクリックひとつでこのアラートを画面から消し去るための×ボタン（Bootstrap標準機能） *@
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+}
+
 @* 検索条件をスッキリまとめるため、背景を薄グレー（bg-light）、枠線を黒、軽い影をつけたカード枠を作成 *@
 <div class="card mb-4 bg-light border-dark shadow-sm">
     @* カードの内側に適切な余白を持たせる本体領域 *@
