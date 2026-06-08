@@ -1,5 +1,6 @@
 ﻿// 日付型（DateTime）などの標準的なシステム機能を使用するための名前空間をインポート
 using System;
+// プロパティに [StringLength] や [Required] などの入力制限ルール（検証用属性）を付けられるようにするシステム共通のパッケージです
 using System.ComponentModel.DataAnnotations;
 
 // タスクのソート順（SortOrders）などの定数定義が格納されている場所をインポート
