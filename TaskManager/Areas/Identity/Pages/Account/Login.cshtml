@@ -7,7 +7,7 @@
 <div class="container mt-5">
     @* パーツを配置する横一行のスペースを作り、その中にあるログイン用のカードを画面の真ん中に寄せる *@
     <div class="row justify-content-center">
-        @* パソコン画面などの横幅において、12分割中5マス分のスマートな幅に制限する *@
+        @* パソコン画面などの横幅において、12分割中5マス分の幅に制限する *@
         <div class="col-md-5">
             @* 見栄えを良くするため、暗めの枠線（border-dark）と軽い影（shadow-sm）をつけたカード枠を作る *@
             <div class="card border-dark shadow-sm">
@@ -50,7 +50,7 @@
 
                         @* 「ログイン状態を保持する」のチェックボックスを配置するグループ *@
                         <div class="form-check mb-3 small">
-                            @* チェックボックス本体。asp-forでC#のRememberMeプロパティ（真偽値）とガチッと連動させる *@
+                            @* チェックボックス本体。asp-forでC#のRememberMeプロパティ（真偽値）と連動させる *@
                             <input class="form-check-input border-secondary" asp-for="Input.RememberMe" />
 
                             @* チェックボックスのラベル。ここをクリックしてもチェックボックスが連動して切り替わる *@

@@ -130,7 +130,7 @@ namespace TaskManager.Controllers
 
 			// 変更したタスクの情報をデータベースに反映（Updateコマンドとして準備）
 			_context.Update(taskItem);
-			// 更新されたステータスと日時を、実際のSQLiteデータベースへ非同期でしっかりと保存する
+			// 更新されたステータスと日時を、実際のSQLiteデータベースへ非同期で保存する
 			await _context.SaveChangesAsync();
 
 			// 完了処理がすべて終わったら、最新の状態を反映させるためにタスク一覧画面（Index）へ戻す
