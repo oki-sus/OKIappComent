@@ -137,7 +137,7 @@ namespace TaskManager.Models
 				// 降順ではない（昇順：Ascending）なら、期限日が近い順（今日明日のタスクが上に来る順）に並べ替える指示を足す
 				: query.OrderBy(t => t.DueDate);
 
-			// 【ここで初めて本物のSQLが自動生成され、一度だけDBへリクエストが飛ぶ】
+			// ここで初めて本物のSQLが自動生成され、一度だけDBへリクエストが飛ぶ
 			// 今まで組み立ててきたすべての条件に合致するタスク一覧を非同期で一括取得し、一覧画面用の箱（vm.Tasks）に詰め込む
 			vm.Tasks = await query.ToListAsync();
         }
@@ -145,7 +145,7 @@ namespace TaskManager.Models
 		// 現在ログインしているユーザーのタスクの中から、期限まで「残り3日以内」かつ「未完了（Completedではない）」のものが1件でもあるか判定する仕事です。
 		public async Task<bool> HasUpcomingDeadlineTasksAsync(string userId)
 		{
-			// ガード節。ユーザーIDが正常に引き渡されていない場合は、安全のために即座に「存在しない（false）」として処理を終了する
+			// ユーザーIDが正常に引き渡されていない場合は、安全のために即座に「存在しない（false）」として処理を終了する
 			if (string.IsNullOrEmpty(userId)) return false;
 
 			// システムの現在の今日の日付を取得する
