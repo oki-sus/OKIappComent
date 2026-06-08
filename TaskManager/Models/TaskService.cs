@@ -148,9 +148,9 @@ namespace TaskManager.Models
 			// ガード節。ユーザーIDが正常に引き渡されていない場合は、安全のために即座に「存在しない（false）」として処理を終了する
 			if (string.IsNullOrEmpty(userId)) return false;
 
-			// システムの現在の「今日のナウ（今日の日付）」を取得する
+			// システムの現在の今日の日付を取得する
 			var today = DateTime.Today;
-			// 💡【ビジネスルール】アラート対象となる「3日後の期限日」を計算してターゲット日付を決める
+			// アラート対象となる「3日後の期限日」を計算してターゲット日付を決める
 			var targetDate = today.AddDays(3);
 
 			// データベースのTaskItemsテーブルに対して、3日以内かつ未完了、でデータが存在するかをチェックする
