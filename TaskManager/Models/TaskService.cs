@@ -142,5 +142,24 @@ namespace TaskManager.Models
 			vm.Tasks = await query.ToListAsync();
         }
 
-    }
+		// 現在ログインしているユーザーのタスクの中から、期限まで「残り3日以内」かつ「未完了（Completedではない）」のものが1件でもあるか判定する仕事です。
+		public async Task<bool> HasUpcomingDeadlineTasksAsync(string userId)
+		{
+			// ガード節。ユーザーIDが正常に引き渡されていない場合は、安全のために即座に「存在しない（false）」として処理を終了する
+			if (string.IsNullOrEmpty(userId)) return false;
+
+			// システムの現在の「今日のナウ（今日の日付）」を取得する
+			var today = DateTime.Today;
+			// 💡【ビジネスルール】アラート対象となる「3日後の期限日」を計算してターゲット日付を決める
+			var targetDate = today.AddDays(3);
+
+			// データベースのTaskItemsテーブルに対して、3日以内かつ未完了、でデータが存在するかをチェックする
+			return await _context.TaskItems.AnyAsync(t =>
+				t.CreatedBy == userId &&						// 自分の作ったタスクであること
+				t.Status != TaskStatuses.Completed &&			// 状態が「完了」ではないこと（未完了）
+				t.DueDate.Date >= today &&						// 期限が過去に切れたものではなく、今日以降であること
+				t.DueDate.Date <= targetDate					// 期限が「今日から数えて3日以内」であること
+			);
+		}
+	}
 }

@@ -53,6 +53,10 @@ namespace TaskManager.Controllers
 			// TaskServiceに「このユーザーの検索条件に合わせて、データをDBから取ってきて箱（vm）に詰めて」と依頼
 			await _taskService.LoadTaskIndexDataAsync(vm, userId);
 
+			// 新しく作ったサービスを呼び出し、残り3日以内の未完了タスクがあるかどうかをチェックする
+			// 結果（あるならTrue、ないならFalse）を、画面行きの箱（vm.ShowExpiryAlert）にガチッとセットして引き渡す
+			vm.ShowExpiryAlert = await _taskService.HasUpcomingDeadlineTasksAsync(userId);
+
 			// 検索結果のタスク一覧や検索条件がギッシリ詰まったViewModelを、一覧画面（Index.cshtml）に渡して描画
 			return View(vm);
         }
