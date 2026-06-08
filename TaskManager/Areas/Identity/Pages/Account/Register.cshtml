@@ -1,7 +1,9 @@
 ﻿@* 独立した「ページ」として動作させるためのRazorページ宣言 *@
 @page
 @* 新規ユーザー登録の裏側(C#)の登録ロジックを管理する、Identity標準のデータモデルを結びつける *@
-@model Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal.RegisterModel
+@*@model Microsoft.AspNetCore.Identity.UI.V5.Pages.Account.Internal.RegisterModel*@
+@* 既製品のモデルではなく、自分が作成した RegisterModel とこの画面を結びつける *@
+@model TaskManager.Areas.Identity.Pages.Account.RegisterModel
 @{
     @* ページのタイトルを設定。レイアウトの共通枠（_Layout.cshtml等）へ引き渡されてタブ名などに使われる *@
     ViewData["Title"] = "新規ユーザー登録";
