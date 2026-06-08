@@ -61,7 +61,7 @@ namespace TaskManager.Controllers
 			return View(vm);
         }
 
-		// 新規作成画面を表示するための処理（「新規登録」ボタンを押したとき）
+		// 新規作成画面を表示するための処理（新規登録ボタンを押したとき）
 		[HttpGet]
 		// ユーザーに文字を入力してもらうための、空っぽの登録フォーム画面を返す
 		public IActionResult Create()
