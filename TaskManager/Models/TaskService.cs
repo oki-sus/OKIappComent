@@ -57,7 +57,7 @@ namespace TaskManager.Models
 				editVm.CreatedAt = foundTask.CreatedAt;
             }
 
-			// すべてのデータの詰め替えが安全かつ正常に完了したため、「true（成功）」を返す
+			// すべてのデータの詰め替えが安全かつ正常に完了したため、true（成功）を返す
 			return true;
         }
 
