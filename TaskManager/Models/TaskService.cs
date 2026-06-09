@@ -74,7 +74,7 @@ namespace TaskManager.Models
 			vm.Categories = await _context.TaskItems
 				// 「自分が作ったタスク」であり、かつ「カテゴリ名が空ではない」データだけを対象に絞り込む
 				.Where(t => t.CreatedBy == userId && !string.IsNullOrEmpty(t.Category))
-				// タスク全体ではなく、カテゴリ名の文字列だけをピンポイントで切り抜く
+				// タスク全体ではなく、カテゴリ名の文字列だけを切り抜く
 				.Select(t => t.Category)
 				// 重複している同じカテゴリ名（例：「仕事」が何個もある状態）を1つにまとめる
 				.Distinct()
@@ -142,7 +142,7 @@ namespace TaskManager.Models
 			vm.Tasks = await query.ToListAsync();
         }
 
-		// 現在ログインしているユーザーのタスクの中から、期限まで「残り3日以内」かつ「未完了（Completedではない）」のものが1件でもあるか判定する仕事です。
+		// 現在ログインしているユーザーのタスクの中から、期限まで「残り3日以内」かつ「未完了（Completedではない）」のものが1件でもあるか判定する
 		public async Task<bool> HasUpcomingDeadlineTasksAsync(string userId)
 		{
 			// ユーザーIDが正常に引き渡されていない場合は、安全のために即座に「存在しない（false）」として処理を終了する

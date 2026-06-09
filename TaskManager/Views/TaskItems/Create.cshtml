@@ -79,6 +79,22 @@
                                 <span asp-validation-for="Status" class="text-danger"></span>
                             </div>
 
+                            @* 進行中専用の進捗率入力エリアのグループ *@
+                            @* 初期状態では display: none で隠しておき、状態が「進行中」のときだけ出現させる *@
+                            <div class="mb-3" id="progressGroup" style="display: none;">
+                                @* 画面に「進捗率(%)」という太字のタイトルラベルを表示する記述 *@
+                                <label asp-for="Progress" class="form-label fw-bold"></label>
+                                @* 入力ボックスと「%」という文字を右側にドッキングさせるためのBootstrapのグループ枠 *@
+                                <div class="input-group">
+                                    @* 0から100までの数値だけ入力を受け付ける、画面のProgressプロパティと直結したテキストボックス *@
+                                    <input asp-for="Progress" type="number" class="form-control" />
+                                    @* 入力欄の右端に「%」という単位を固定表示する装飾パーツ *@
+                                    <span class="input-group-text">%</span>
+                                </div>
+                                @* 万が一ユーザーが「150」や「-10」などの不正な数値を打ち込んで送信しようとした際、赤文字でエラーを出す場所 *@
+                                <span asp-validation-for="Progress" class="text-danger small"></span>
+                            </div>
+
                             @* 画面の右半分（col-md-6）に配置する、優先度選択エリアのグループ（下部に余白） *@
                             <div class="col-md-6 mb-3">
                                 @* C#側のプロパティから日本語名（優先度）を自動取得して表示するラベル *@
@@ -130,8 +146,37 @@
 
 @* 画面のHTMLを読み込み終わった後に、追加のJavaScriptを配置するスクリプトセクションを開始 *@
 @section Scripts {
-    @{
-        @* 画面をリロードせず、送信ボタンを押したその場（ミリ秒）で高速に入力チェック（バリデーション）を行う共通の部品スクリプトを合体して読み込む *@
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @* ASP.NET Core標準の、画面をリロードせずにその場で入力エラーを判定する仕組み（バリデーションスクリプト）を読み込む *@
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // 画面のすべての部品（HTML）がブラウザに無事に読み込まれ終わった瞬間に動き出す処理
+        document.addEventListener("DOMContentLoaded", function () {
+            // 画面の中にある「状態（Status）」を選ぶドロップダウンの部品を取得して変数に入れる
+            const statusSelect = document.querySelector("[name='Status']");
+            // 先ほど新しく作った「進捗率(%)」の入力エリア全体の枠（div）を取得して変数に入れる
+            const progressGroup = document.getElementById("progressGroup");
+            // 「進捗率(%)」の数値そのものを打ち込むテキストボックスの部品を取得して変数に入れる
+            const progressInput = document.querySelector("[name='Progress']");
+
+            // ドロップダウンの選択肢によって、進捗率の入力欄を出したり消したりする「切り替えスイッチ」の役割をする関数
+            function toggleProgress() {
+                // もしドロップダウンで「InProgress（進行中）」が選ばれていた場合の処理
+                if (statusSelect.value === "InProgress" || statusSelect.value === "進行中") {
+                    // 進捗率の入力欄を「表示（block）」に切り替えて、ユーザーが入力できるようにする
+                    progressGroup.style.display = "block";
+                } else {
+                    // 「未着手」や「完了」などそれ以外が選ばれている場合は、入力欄を「非表示（none）」にして画面から隠す
+                    progressGroup.style.display = "none";
+                    // 画面から隠れた状態の時は、データにゴミが残らないように数値を「0（初期値）」にリセットする
+                    if (progressInput) progressInput.value = 0;
+                }
+            }
+
+            // ユーザーがドロップダウンの選択を切り替えた瞬間に、上記の切り替え関数を呼び出すように命令
+            statusSelect.addEventListener("change", toggleProgress);
+            // 画面が最初に開いた瞬間にも、現在の状態に合わせて表示・非表示を正しく合わせるために1回実行しておく
+            toggleProgress();
+        });
+    </script>
 }
