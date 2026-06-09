@@ -41,6 +41,11 @@ namespace TaskManager.ViewModels
 		// タスクの現在の進行状況を保持するプロパティ（特に指定がない場合の初期値として「未着手」の定数を設定）
 		public string Status { get; set; } = TaskStatuses.NotStarted;
 
+		// [Range]属性を付けることで、105%や-5%といった不正な値が入力されるのをブロックします
+		[Range(0, 100, ErrorMessage = "進捗率は0から100の間で入力してください。")]
+		// タスクの現在の進捗率を保持するプロパティ
+		public int Progress { get; set; }
+
 		// タスクの重要度・緊急度を保持するプロパティ（特に指定がない場合の初期値として「中」の定数を設定）
 		public string Priority { get; set; } = TaskPriority.Medium;
 
@@ -64,6 +69,8 @@ namespace TaskManager.ViewModels
 			this.DueDate = entity.DueDate;
 			// DBのステータス（状態）を、ViewModelのステータスプロパティへコピー
 			this.Status = entity.Status;
+			// DBの進捗率をViewModelの進捗率プロパティへコピー
+			this.Progress = entity.Progress;
 			// DBの優先度を、ViewModelの優先度プロパティへコピー
 			this.Priority = entity.Priority;
 			// DBの詳細メモを、ViewModelの詳細メモプロパティへコピー

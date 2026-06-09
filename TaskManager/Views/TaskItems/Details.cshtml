@@ -16,7 +16,7 @@
         <div class="col-md-8">
             @* 黒い枠線（border-dark）と軽い影（shadow-sm）で立体感を出したカード型の外枠を作成 *@
             <div class="card border-dark shadow-sm">
-                @* カードのヘッダー部分。背景を黒（bg-dark）、文字を白にし、左右の要素を端と端に綺麗に並べる（d-flex justify-content-between） *@
+                @* カードのヘッダー部分。背景を黒（bg-dark）、文字を白にし、左右の要素を端と端に並べる（d-flex justify-content-between） *@
                 <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
                     @* インフォメーションマークのアイコン（bi-info-circle）を太字タイトルの左側に配置 *@
                     <span class="fw-bold"><i class="bi bi-info-circle me-2"></i>タスク詳細</span>
@@ -75,6 +75,35 @@
                             </div>
                         </div>
                     </div>
+
+                    @* タスクの状態が「進行中」のときだけ、期限の下に進捗率とプログレスバーを表示する *@
+                    @if (Model.Status == "InProgress" || Model.Status == "進行中")
+                    {
+                        @* 期限の行（row）と同じ余白感（mb-3）を持たせ、上下中央（align-items-center）に並べる行 *@
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-8">
+                                @* 左側のラベル「進捗率」と、右側のバーを2分割（row）して配置 *@
+                                <div class="row align-items-center">
+                                    @* 左側：他の項目と見た目を揃えた、太字・薄グレーの「進捗率」ラベル *@
+                                    <div class="col-sm-6 fw-bold text-muted">進捗率</div>
+                                    
+                                    @* 右側：％バッジとプログレスバーを横並び（d-flex）にし、隙間（gap-2）を空ける *@
+                                    <div class="col-sm-6 d-flex align-items-center gap-2">
+                                        @* 現在の進捗率の数値を、状態バッジに合わせた青色（bg-primary）で表示 *@
+                                        <span class="badge bg-primary">@Model.Progress%</span>
+                                        
+                                        @* 横幅を100%に広げつつ最大150pxに制限したバーの外枠 *@
+                                        <div class="progress flex-grow-1" style="height:10px; max-width:150px;">
+                                            @* 届いた進捗率に合わせて、バーの長さが自動で伸縮する本体。アニメーション付きの仕様 *@
+                                            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated"
+                                                 role="progressbar"
+                                                 style="width:@Model.Progress%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
 
                     @* 上記の基本ステータス領域と、下部の詳細説明領域を視覚的に美しく区切るための横線 *@
                     <hr />

@@ -3,7 +3,7 @@
 @* 状態や優先度の定数（TaskStatuses.Completed など）を画面内でそのまま扱うために名前空間をインポート *@
 @using TaskManager.Models
 
-@* 画面上部のタイトルエリア。下部にうっすらと境界線（border-bottom）を敷いて綺麗に区切る *@
+@* 画面上部のタイトルエリア。下部にうっすらと境界線（border-bottom）を敷いて区切る *@
 <div class="pt-3 pb-2 mb-3 border-bottom">
     @* 太字（fw-bold）の大きな文字で「タスク一覧」という見出しを表示 *@
     <h1 class="h2 fw-bold">タスク一覧</h1>
@@ -36,7 +36,7 @@
                 <div class="col-md-3">
                     @* 小さめの太字で「キーワード」とラベルを表示 *@
                     <label class="small fw-bold">キーワード</label>
-                    @* 画面の入力値と裏側のデータモデルを連動させ、検索キーワードの保持と入力チェック（バリデーション）を一元管理する仕事を担当しています。 *@
+                    @* 画面の入力値と裏側のデータモデルを連動させ、検索キーワードの保持と入力チェック（バリデーション）を一元管理する *@
                     <input type="text" asp-for="SearchString" class="form-control" placeholder="タスク名を入力..." />
                     @* エラーメッセージを出す場所 *@
                     <span asp-validation-for="SearchString" class="text-danger small"></span>
@@ -179,7 +179,32 @@
                 @* 期限日時データから時刻を取り除き、「年/月/日」の短い形式に変換して上下中央に配置して出力 *@
                 <td class="align-middle">@item.DueDate.ToShortDateString()</td>
                 @* 進捗状況（未着手・進行中など）を、左右中央（text-center）かつ上下中央（align-middle）に配置して出力 *@
-                <td class="text-center align-middle">@item.Status</td>
+                <td class="text-center align-middle">
+                    @* タスクの状態が「進行中」だった場合の表示 *@
+                    @* データベースの値が進行中（InProgress）を示しているか判定します *@
+                    @if (item.Status == "InProgress" || item.Status == "進行中")
+                    {
+                        @* 青色のバッジ（bg-primary）スタイルで「進行中 (70%)」のように現在の数値をカッコ付きで表示 *@
+                        <span class="badge bg-primary mb-1">進行中 (@item.Progress%)</span>
+                        @* 視覚的にどれくらい進んでいるかを一目でわからせるための、細めの進捗バー（高さ6px、横幅100px）の外枠 *@
+                        <div class="progress mx-auto" style="height: 6px; width: 100px;">
+                            @* C#から届いた現在の進捗率の数値をそのままCSSの「width: 〇〇%;」に代入して、バーの長さを自動伸縮させる本体 *@
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @item.Progress%;"></div>
+                        </div>
+                    }
+                    @* タスクの状態が「完了」だった場合の表示*@
+                    else if (item.Status == "Completed" || item.Status == "完了")
+                    {
+                        @* 緑色のバッジ（bg-success）で「完了」と表示する *@
+                        <span class="badge bg-success">完了</span>
+                    }
+                    @* タスクの状態が「未着手」やそれ以外だった場合の表示 *@
+                    else
+                    {
+                        @* グレーのバッジ（bg-secondary）で「未着手」と表示する *@
+                        <span class="badge bg-secondary">未着手</span>
+                    }
+                </td>
                 @* 優先度（高・中・低）を、左右中央かつ上下中央に配置して出力 *@
                 <td class="text-center align-middle">@item.Priority</td>
 

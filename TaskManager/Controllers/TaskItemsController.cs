@@ -94,6 +94,8 @@ namespace TaskManager.Controllers
             taskItem.CreatedAt = DateTime.Now;      // 作った日時
             taskItem.UpdatedAt = DateTime.Now;      // 更新日時(新規作成だから作成日時と同じ)
 
+			taskItem.Progress = taskItem.Progress;	// 進捗率
+
 			// Entity Frameworkの変更追跡機能に対して、「新しくこのタスクを追加してね」と登録
 			_context.Add(taskItem);
 			// 追跡に登録された追加コマンドを、実際のSQLiteデータベースに対して非同期で安全に保存（書き込みを実行）
@@ -106,7 +108,7 @@ namespace TaskManager.Controllers
 		[HttpPost]
 		// セキュリティ対策。URLやリクエストを偽造した不正なデータ書き換え命令をブロックする
 		[ValidateAntiForgeryToken]
-		// 完了状態にしたいタスクの固有番号（id）を引数としてピンポイントで受け取る
+		// 完了状態にしたいタスクの固有番号（id）を引数として受け取る
 		public async Task<IActionResult> Complete(int id)
 		{
 			// 悪意あるユーザーが「他人のタスクID」を勝手に指定して完了にできないよう、自分のユーザーIDを取得
@@ -125,6 +127,10 @@ namespace TaskManager.Controllers
 
 			// タスクのステータス管理プロパティを、完了状態を表す文字列（Completed）に書き換える
 			taskItem.Status = TaskStatuses.Completed;
+
+			// 完了にするから進捗率も100％にする
+			taskItem.Progress = 100;
+
 			// データを書き換えたので、更新日時を今この瞬間の現在時刻に上書きする
 			taskItem.UpdatedAt = DateTime.Now;
 
@@ -217,6 +223,8 @@ namespace TaskManager.Controllers
 				taskItem.Priority = vm.Priority;
 				// 画面から送られてきた最新の詳細メモを、元データに上書き
 				taskItem.Detail = vm.Detail;
+				// 画面から送られてきた最新の進捗率を、元データに上書き
+				taskItem.Progress = vm.Progress;
 				// 編集を行ったので、最終更新日時を今この瞬間の現在時刻に上書き
 				taskItem.UpdatedAt = DateTime.Now;
 
