@@ -28,7 +28,7 @@ namespace TaskManager.Areas.Identity.Pages.Account
 			_signInManager = signInManager ?? throw new ArgumentNullException(nameof(signInManager));
 		}
 
-		// 画面の入力フォームとC#の変数をガッチリ結びつけるための設定
+		// 画面の入力フォームとC#の変数を結びつけるための設定
 		[BindProperty]
 		// ユーザーが入力したメールアドレスとパスワードを受け取るための「箱」を準備
 		public InputModel Input { get; set; } = new InputModel();
@@ -69,7 +69,7 @@ namespace TaskManager.Areas.Identity.Pages.Account
 			// もし戻り先URL（returnUrl）が空っぽ（Null）だったら、安全のためにルート（/）を代わりに入れておく
 			returnUrl ??= Url.Content("~/");
 
-			// 安全性が保証された戻り先URLを、クラス全体の変数（ReturnUrl）にしっかりと保存しておく
+			// 安全性が保証された戻り先URLを、クラス全体の変数（ReturnUrl）に保存しておく
 			ReturnUrl = returnUrl;
 		}
 

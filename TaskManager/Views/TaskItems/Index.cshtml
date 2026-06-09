@@ -192,7 +192,7 @@
                         <form asp-action="Complete" asp-route-id="@item.Id" method="post" style="display:inline;" onsubmit="return confirm('このタスクを完了にしてよろしいですか？');">
                             @* セキュリティ対策（CSRF対策）。外部からの不正な偽装アクセスをブロックするためのセキュリティ用トークンをフォーム内に埋め込む *@
                             @Html.AntiForgeryToken()
-                            @* フォームを送信してタスクを一発で完了状態にするための、緑色の枠線仕立てのボタン *@
+                            @* フォームを送信してタスクを完了状態にするための、緑色の枠線仕立てのボタン *@
                             <button type="submit" class="btn btn-outline-success btn-sm">完了にする</button>
                         </form>
                     }
