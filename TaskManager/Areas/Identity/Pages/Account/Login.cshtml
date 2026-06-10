@@ -39,8 +39,8 @@
                         
                         @* ログイン画面用 パスワード表示切り替え *@
                         <div class="mb-3">
-                            @* asp-for から「パスワード」という日本語ラベルを自動取得 *@
-                            <label class="form-label small fw-bold" asp-for="Input.Password"></label>
+                            @* パスワード用のラベル。asp-forでC#のPasswordプロパティと紐付け、少し小さめの太字にする *@
+                            <label asp-for="Input.Password" class="form-label small fw-bold">パスワード</label>
 
                             @* 入力ボックスと右側の目のマークボタンを一体化させる Bootstrap のグループ枠 *@
                             <div class="input-group">

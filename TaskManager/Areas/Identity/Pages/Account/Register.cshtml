@@ -45,8 +45,8 @@
 
                         @* パスワード入力エリアのグループ *@
                         <div class="mb-3">
-                            @* 「パスワード」という日本語ラベルを取得 *@
-                            <label asp-for="Input.Password" class="form-label small fw-bold"></label>
+                            @* パスワード用のラベル。少し小さめの太字で濃い目の文字色に設定 *@
+                            <label class="small fw-bold text-dark">パスワード</label>
 
                             @* 入力ボックスと右側の目のマークボタンを一体化させる Bootstrap のグループ枠 *@
                             <div class="input-group">
@@ -64,7 +64,7 @@
 
                             @* 箇条書きのドットマークを消し（list-unstyled）、上部に少しの余白（mt-2）と、視認性を高める小さめ文字（small）を適用 *@
                             <ul class="list-unstyled mt-2 small">
-                                @* 💡 各liタグに固有の「id」を割り振ることで、JavaScript側から document.getElementById を使ってピンポイントで中身のHTMLや文字色を書き換えられるように設計 *@
+                                @* 各liタグに固有の「id」を割り振ることで、JavaScript側から document.getElementById を使ってピンポイントで中身のHTMLや文字色を書き換えられるように設計 *@
                                 @* 初期状態はすべて「未達成」を意味する、薄いグレー（text-muted）と空っぽの四角アイコン（bi-square）で配置 *@
                                 <li id="req-length" class="text-muted"><i class="bi bi-square me-1"></i> 6文字以上で入力してください</li>
                                 <li id="req-digit" class="text-muted"><i class="bi bi-square me-1"></i> 数字（0～9）を1文字以上含めてください</li>
@@ -119,8 +119,9 @@
     @* ブラウザ側で高速に入力チェック（バリデーション）を行うASP.NET Core標準の仕組みを読み込む *@
     <partial name="_ValidationScriptsPartial" />
 
+    @* パスワードの複雑さ（大文字小文字や記号）をリアルタイムで視覚的にチェックしたり、パスワードの表示非表示を操作する仕組み *@
     <script>
-        // 画面のすべての部品（HTML要素）がブラウザに完全に読み込まれ、操作可能になった瞬間に起動するイベント
+        // 画面のすべての部品（HTML要素）がブラウザに読み込まれ、操作可能になった瞬間に起動するイベント
         document.addEventListener("DOMContentLoaded", function () {
 
             // 1つ目のパスワード入力ボックスの部品を、ASP.NETが自動生成するID（Input_Password）で取得
@@ -150,7 +151,7 @@
                 // 現在、テキストボックスに入力されている生の文字列（中身）を取得して変数に格納
                 const val = passwordInput.value;
 
-                // もし入力欄が完全に空っぽ（文字数が0）だった場合は、これ以降の正規表現チェックを行う必要がないため、
+                // もし入力欄が空っぽ（文字数が0）だった場合は、これ以降の正規表現チェックを行う必要がないため、
                 // すべてのチェック項目を未達成（false）のグレー状態に初期化して、この入力イベントの処理を早期終了（return）する
                 if (val.length === 0) {
                     updateStatus("req-length", false, "6文字以上で入力してください");
