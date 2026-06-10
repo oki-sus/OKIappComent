@@ -37,14 +37,23 @@
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
                         
-                        @* パスワード入力エリアのグループ（下部に余白を確保） *@
+                        @* ログイン画面用 パスワード表示切り替え *@
                         <div class="mb-3">
                             @* パスワード用のラベル。asp-forでC#のPasswordプロパティと紐付け、少し小さめの太字にする *@
                             <label asp-for="Input.Password" class="form-label small fw-bold">パスワード</label>
-                            @* パスワード入力ボックス。type="password"で文字を伏字にし、ブラウザの自動補完、入力必須として指定 *@
-                            <input asp-for="Input.Password" type="password" class="form-control border-secondary" autocomplete="current-password" aria-required="true" />
-                            
-                            @* パスワードの入力不備（文字数不足など）がある場合にその場で赤文字のエラーを出す場所 *@
+
+                            @* 入力ボックスと右側の目のマークボタンを一体化させる Bootstrap のグループ枠 *@
+                            <div class="input-group">
+                                @* パスワード入力ボックス　操作用の id="loginPasswordInput" を追加 *@
+                                <input class="form-control" asp-for="Input.Password" id="loginPasswordInput" placeholder="パスワードを入力..." />
+
+                                @* 右端に付けるボタン *@
+                                <button class="btn btn-outline-secondary" type="button" id="toggleLoginPasswordBtn">
+                                    @* 初期値は「隠す」状態なので、斜め線の入った目のアイコン（bi-eye-slash）をセット *@
+                                    <i class="bi bi-eye-slash" id="loginToggleIcon"></i>
+                                </button>
+                            </div>
+                            @* バリデーションエラーの赤文字を出す場所 *@
                             <span asp-validation-for="Input.Password" class="text-danger small"></span>
                         </div>
 
@@ -76,3 +85,34 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    @* 高速入力チェック用部品の読み込み *@
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // 画面の部品がすべてブラウザに読み込まれ終わった瞬間に動き出す処理
+        document.addEventListener("DOMContentLoaded", function () {
+            // ログイン画面の中の「パスワード入力欄」「切り替えボタン」「目のアイコン」の3つの部品をそれぞれ取得
+            const loginPasswordInput = document.getElementById("loginPasswordInput");
+            const toggleLoginPasswordBtn = document.getElementById("toggleLoginPasswordBtn");
+            const loginToggleIcon = document.getElementById("loginToggleIcon");
+
+            // ユーザーが右端のボタンをクリックした時に発動
+            toggleLoginPasswordBtn.addEventListener("click", function () {
+                // もし現在、パスワードが伏せ字（password）モードなら
+                if (loginPasswordInput.type === "password") {
+                    // 文字がそのまま見えるテキスト（text）モードに切り替える
+                    loginPasswordInput.type = "text";
+                    // アイコンの形を、斜め線のない「開いた目（bi-eye）」に変更
+                    loginToggleIcon.className = "bi bi-eye";
+                } else {
+                    // すでに文字が見えている状態なら、安全のために伏せ字（password）モードに戻す
+                    loginPasswordInput.type = "password";
+                    // アイコンの形も、斜め線の入った「閉じた目（bi-eye-slash）」に戻す
+                    loginToggleIcon.className = "bi bi-eye-slash";
+                }
+            });
+        });
+    </script>
+}

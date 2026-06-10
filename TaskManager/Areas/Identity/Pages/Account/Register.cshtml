@@ -43,24 +43,54 @@
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
 
-                        @* パスワード入力エリアのグループ（下部に余白を確保） *@
-                        <div class="form-group mb-3">
+                        @* パスワード入力エリアのグループ *@
+                        <div class="mb-3">
                             @* パスワード用のラベル。少し小さめの太字で濃い目の文字色に設定 *@
                             <label class="small fw-bold text-dark">パスワード</label>
-                            @* パスワードの入力ボックス。枠線を濃くし、軽い影を付け、新パスワード用の自動補完を設定し、入力例を表示 *@
-                            <input asp-for="Input.Password" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
-                            
-                            @* パスワードの入力不備がある場合にその場で赤文字のエラーを出す場所 *@
-                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
+
+                            @* 入力ボックスと右側の目のマークボタンを一体化させる Bootstrap のグループ枠 *@
+                            <div class="input-group">
+                                @* パスワード入力ボックス　操作用の id="registerPasswordInput" を追加 *@
+                                <input asp-for="Input.Password" id="Input_Password" class="form-control" placeholder="パスワードを入力..." />
+
+                                @* 右端にドッキングするボタン *@
+                                <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPasswordBtn">
+                                    @* 初期値は「隠す」状態なので、斜め線の入った目のアイコン（bi-eye-slash）をセット *@
+                                    <i class="bi bi-eye-slash" id="registerToggleIcon"></i>
+                                </button>
+                            </div>
+                            @* バリデーションエラー（文字数や大文字必須など）の赤文字を出す場所 *@
+                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+                            @* 箇条書きのドットマークを消し（list-unstyled）、上部に少しの余白（mt-2）と、視認性を高める小さめ文字（small）を適用 *@
+                            <ul class="list-unstyled mt-2 small">
+                                @* 各liタグに固有の「id」を割り振ることで、JavaScript側から document.getElementById を使ってピンポイントで中身のHTMLや文字色を書き換えられるように設計 *@
+                                @* 初期状態はすべて「未達成」を意味する、薄いグレー（text-muted）と空っぽの四角アイコン（bi-square）で配置 *@
+                                <li id="req-length" class="text-muted"><i class="bi bi-square me-1"></i> 6文字以上で入力してください</li>
+                                <li id="req-digit" class="text-muted"><i class="bi bi-square me-1"></i> 数字（0～9）を1文字以上含めてください</li>
+                                <li id="req-upper" class="text-muted"><i class="bi bi-square me-1"></i> 英大文字（A～Z）を1文字以上含めてください</li>
+                                <li id="req-lower" class="text-muted"><i class="bi bi-square me-1"></i> 英小文字（a～z）を1文字以上含めてください</li>
+                                <li id="req-symbol" class="text-muted"><i class="bi bi-square me-1"></i> 記号（\や!など）を1文字以上含めてください</li>
+                            </ul>
                         </div>
 
                         @* 確認用パスワード入力エリアのグループ（下部に少し多めの余白 mb-4 を確保） *@
                         <div class="form-group mb-4">
                             @* 確認用パスワードのラベル。少し小さめの太字で濃い目の文字色に設定 *@
                             <label class="small fw-bold text-dark">パスワード（確認）</label>
-                            @* 確認用パスワードの入力ボックス。誤入力を防ぐため、上記と同じ設定で2回目の入力を促す *@
-                            <input asp-for="Input.ConfirmPassword" class="form-control border-dark shadow-sm" autocomplete="new-password" placeholder="password" />
                             
+                            @* 入力ボックスと右側の目のマークボタンを一体化させるためのBootstrapのグループコンテナ *@
+                            <div class="input-group">
+                                @* 裏側のJavaScriptの切り替え処理が検知できるようにid="Input_ConfirmPassword" を設定 *@
+                                <input asp-for="Input.ConfirmPassword" id="Input_ConfirmPassword" class="form-control" placeholder="パスワードを再入力..." />
+
+                                @* クリックすると表示/非表示の切り替えJavaScriptを起動させるためのボタン *@
+                                <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPasswordBtn">
+                                    @* 初期状態は「隠す」設定のため、目のマークに斜め線が入ったアイコン（bi-eye-slash）をあらかじめセット *@
+                                    <i class="bi bi-eye-slash" id="confirmToggleIcon"></i>
+                                </button>
+                            </div>
+
                             @* 1回目に入力したパスワードと一致しない場合などに、その場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.ConfirmPassword" class="text-danger small"></span>
                         </div>
@@ -86,75 +116,136 @@
 
 @* 画面表示の後に実行したいJavaScript（スクリプト領域）を開始 *@
 @section Scripts {
-    @* ブラウザ側での高速な自動入力チェック機能を有効化するための共有部分（ライブラリ）を読み込む *@
+    @* ブラウザ側で高速に入力チェック（バリデーション）を行うASP.NET Core標準の仕組みを読み込む *@
     <partial name="_ValidationScriptsPartial" />
-    @* パスワードの複雑さ（大文字小文字や記号）をリアルタイムで視覚的にチェックする仕組み *@
+
+    @* パスワードの複雑さ（大文字小文字や記号）をリアルタイムで視覚的にチェックしたり、パスワードの表示非表示を操作する仕組み *@
     <script>
-        // 画面のHTML要素がすべてブラウザに読み込まれ、操作可能になったタイミングで実行する
+        // 画面のすべての部品（HTML要素）がブラウザに読み込まれ、操作可能になった瞬間に起動するイベント
         document.addEventListener("DOMContentLoaded", function () {
-            // パスワードの入力欄（HTML要素）のIDを指定して取得
+
+            // 1つ目のパスワード入力ボックスの部品を、ASP.NETが自動生成するID（Input_Password）で取得
             const passwordInput = document.getElementById("Input_Password");
-            // 万が一、画面上にパスワード入力欄が見つからなかった場合はバグ防止のため処理をここで終了する
-            if (!passwordInput) return;
+            // 1つ目のパスワードの「表示/非表示」をパチパチ切り替えるための右端のボタン部品を取得
+            const toggleRegPasswordBtn = document.getElementById("toggleRegisterPasswordBtn");
+            // 1つ目のボタンの中に配置されている、目の形をしたアイコン部品（iタグ）を取得
+            const regToggleIcon = document.getElementById("registerToggleIcon");
 
-            // パスワードの文字数や文字種別の達成状況を綺麗に並べるための、チェックリスト用のHTML雛形を定義
-            // 初期状態はすべて未達成なので薄いグレーの四角に
-            const checklistHtml = `
-                <div class="card mt-2 shadow-sm border-secondary">
-                    <div class="card-body py-2 px-3 bg-white rounded">
-                        <p class="small text-muted mb-1 fw-bold"><i class="bi bi-shield-lock me-1"></i>パスワードの必須条件：</p>
-                        <ul class="list-unstyled mb-0 small" id="password-requirements" style="line-height: 1.6;">
-                            <li id="req-length" class="text-muted"><i class="bi bi-square me-1"></i> 6文字以上で入力してください</li>
-                            <li id="req-digit" class="text-muted"><i class="bi bi-square me-1"></i> 数字（0～9）を1文字以上含めてください</li>
-                            <li id="req-upper" class="text-muted"><i class="bi bi-square me-1"></i> 英大文字（A～Z）を1文字以上含めてください</li>
-                            <li id="req-lower" class="text-muted"><i class="bi bi-square me-1"></i> 英小文字（a～z）を1文字以上含めてください</li>
-                            <li id="req-symbol" class="text-muted"><i class="bi bi-square me-1"></i> 記号（\や!など）を1文字以上含めてください</li>
-                        </ul>
-                    </div>
-                </div>
-            `;
-            // 定義したチェックリスト用のHTMLを、パスワード入力ボックスのすぐ後ろ（真下）に滑り込ませて表示する
-            passwordInput.insertAdjacentHTML("afterend", checklistHtml);
+            // 確認用パスワード入力ボックスの部品を、指定したID（Input_ConfirmPassword）で取得
+            const confirmPasswordInput = document.getElementById("Input_ConfirmPassword");
+            // 確認用パスワードの「表示/非表示」を切り替えるための右端のボタン部品を取得
+            const toggleConfirmPasswordBtn = document.getElementById("toggleConfirmPasswordBtn");
+            // 確認用ボタンの中に配置されている、目の形をしたアイコン部品（iタグ）を取得
+            const confirmToggleIcon = document.getElementById("confirmToggleIcon");
 
-            // 文字が入力されるたびにリアルタイムでチェックする
+            // もしメインのパスワード入力エリアに関する3つの部品が画面内に1つでも存在しない場合は、
+            // これ以降の入力監視やクリック監視を設定するとNullエラーでクラッシュするため、即座に処理を中断（return）する
+            if (!passwordInput || !toggleRegPasswordBtn || !regToggleIcon) {
+                return;
+            }
+
+
+            // パスワードの文字入力（リアルタイムチェック）機能
+            // ユーザーがパスワード入力欄に1文字でもキーを打ち込むか、文字を消すたびに（inputイベント）中の処理が即座に実行される
             passwordInput.addEventListener("input", function () {
-                // 現在入力欄に打ち込まれている最新の文字列を取得
+                // 現在、テキストボックスに入力されている生の文字列（中身）を取得して変数に格納
                 const val = passwordInput.value;
 
-                // 条件チェック
-                // 5つの必須条件を、正規表現（特定の文字種が含まれているかのパターンマッチ）を使って判定（クリアならtrue）
+                // もし入力欄が空っぽ（文字数が0）だった場合は、これ以降の正規表現チェックを行う必要がないため、
+                // すべてのチェック項目を未達成（false）のグレー状態に初期化して、この入力イベントの処理を早期終了（return）する
+                if (val.length === 0) {
+                    updateStatus("req-length", false, "6文字以上で入力してください");
+                    updateStatus("req-digit",  false, "数字（0～9）を1文字以上含めてください");
+                    updateStatus("req-upper",  false, "英大文字（A～Z）を1文字以上含めてください");
+                    updateStatus("req-lower",  false, "英小文字（a～z）を1文字以上含めてください");
+                    updateStatus("req-symbol", false, "記号（\\や!など）を1文字以上含めてください");
+                    return;
+                }
+
+                // 文字数が6文字以上である条件を満たしているかを判定（満たしていればtrue、未満ならfalse）
                 const isLengthOk = val.length >= 6;
-                const isDigitOk  = /[0-9]/.test(val);
-                const isUpperOk  = /[A-Z]/.test(val);
-                const isLowerOk  = /[a-z]/.test(val);
+                // 正規表現（/[0-9]/）を使い、文字列の中に半角数字が1文字でも含まれているかをチェックする
+                const isDigitOk = /[0-9]/.test(val);
+                // 正規表現（/[a-z]/）を使い、文字列の中に英語の小文字が1文字でも含まれているかをチェックする
+                const isLowerOk = /[a-z]/.test(val);
+                // 正規表現（/[A-Z]/）を使い、文字列の中に英語の大文字が1文字でも含まれているかをチェック）する
+                const isUpperOk = /[A-Z]/.test(val);
+                // 正規表現（/[^A-Za-z0-9]/）を使い、英数字以外の文字（＝記号や特殊文字）が1文字でも含まれているかをチェックする
                 const isSymbolOk = /[^A-Za-z0-9]/.test(val);
 
-                // 条件の達成・未達成に応じて、チェックリストの一行（アイコンと文字色）を書き換えるための補助関数
+                // 条件の成否（true/false）に応じて、下部リストの見た目を動的に書き換える共通の命令
                 function updateStatus(id, isOk, text) {
-                    // 書き換え対象となるリスト項目（liタグ）をIDで取得
+                    // 書き換え対象となるリストの一行（liタグ）を、HTMLに設定された固有のIDを使って取得
                     const el = document.getElementById(id);
 
-                    //もし条件をクリアしている（isOkがtrue）場合の処理
+                    // もしHTML側に指定されたIDのリスト部品が見つからなかった場合は、書き換え処理ができずエラーになるため終了する
+                    if (!el) return;
+
+                    // 条件を無事にクリアしている（isOkがtrue）場合の処理
                     if (isOk) {
-                        // 条件をクリアしたら「緑色のチェック付き四角」にする
+                        // リスト要素の内部HTMLを、Bootstrapの「緑色のチェック付き四角アイコン」と指定のテキストに書き換える
                         el.innerHTML = `<i class="bi bi-check-square-fill me-1"></i> ${text}`;
-                        //文字色を成功を表す緑色（text-success）にして太字に変更する
+                        // CSSクラス名を「text-success（緑色）」かつ「fw-bold（太字）」に変更
                         el.className = "text-success fw-bold";
                     } else {
-                        // 未達成なら「薄いグレーの空の四角」に戻す
+                        // 条件を満たしていない（isOkがfalse）場合の処理
+                        // リスト要素の内部HTMLを、標準の「薄いグレーの空っぽの四角アイコン」と指定のテキストに戻す
                         el.innerHTML = `<i class="bi bi-square me-1"></i> ${text}`;
-                        // 文字色を標準的な薄いグレー（text-muted）に戻し、太字も解除する
+                        // CSSクラス名を標準の「text-muted（薄いグレー）」に戻し、太字の設定も解除する
                         el.className = "text-muted";
                     }
                 }
 
-                // 定義した補助関数を使い、5つのチェック項目それぞれに対してリアルタイムな状態変更を反映させる
+                // 上記で定義した補助関数を呼び出し、5つの条件式（true/false）の結果をそれぞれの画面項目にリアルタイムに反映させる
                 updateStatus("req-length", isLengthOk, "6文字以上で入力してください");
                 updateStatus("req-digit",  isDigitOk,  "数字（0～9）を1文字以上含めてください");
                 updateStatus("req-upper",  isUpperOk,  "英大文字（A～Z）を1文字以上含めてください");
                 updateStatus("req-lower",  isLowerOk,  "英小文字（a～z）を1文字以上含めてください");
-                updateStatus("req-symbol", isSymbolOk, "記号（\や!など）を1文字以上含めてください");
+                updateStatus("req-symbol", isSymbolOk, "記号（\\や!など）を1文字以上含めてください");
             });
+
+
+            // 「1つ目のパスワード」表示・非表示切り替え機能
+            // ユーザーが1つ目の右端ボタンをクリックした瞬間（clickイベント）に、表示切り替えの命令を発動する
+            toggleRegPasswordBtn.addEventListener("click", function () {
+                // 現在、パスワード入力欄のタイプ属性が「伏せ字（password）」モードになっているかを条件分岐で判定
+                if (passwordInput.type === "password") {
+                    // もし伏せ字モードなら、打ち込んだ文字がそのままハッキリと見える「通常テキスト（text）」モードに属性を上書きする
+                    passwordInput.type = "text";
+                    // アイコンのクラス名を、Bootstrap Iconsの「斜め線のない、開いた目（bi-eye）」の形状へと動的に変更する
+                    regToggleIcon.className = "bi bi-eye";
+                } else {
+                    // すでに文字が見えている通常テキスト状態（text）であれば、安全のために元の「伏せ字（password）」モードに属性を戻す
+                    passwordInput.type = "password";
+                    // アイコンのクラス名も、再び「斜め線の入った、閉じた目（bi-eye-slash）」の形状へと動的に戻す
+                    regToggleIcon.className = "bi bi-eye-slash";
+                }
+            });
+
+
+            // 「確認用パスワード」表示・非表示切り替え機能
+            // もし画面内から確認用パスワード入力欄、確認用ボタン、確認用アイコンのいずれかが欠損している場合は、
+            // これ以降のクリックイベントを設定するとNullリファレンスエラーを起こすため、この切り替え機能の設定処理を安全に終了（return）する
+            if (!confirmPasswordInput || !toggleConfirmPasswordBtn || !confirmToggleIcon) {
+                return;
+            }
+
+            // ユーザーが確認用の右端ボタンをクリックした時（clickイベント）に、表示切り替えの命令を発動する
+            toggleConfirmPasswordBtn.addEventListener("click", function () {
+                // 現在、確認用入力欄のタイプ属性が「伏せ字（password）」モードになっているかを条件分岐で判定
+                if (confirmPasswordInput.type === "password") {
+                    // もし伏せ字モードなら、打ち込んだ文字がそのままハッキリと見える「通常テキスト（text）」モードに属性を上書きする
+                    confirmPasswordInput.type = "text";
+                    // アイコンのクラス名を、Bootstrap Iconsの「斜め線のない、開いた目（bi-eye）」の形状へと動的に変更する
+                    confirmToggleIcon.className = "bi bi-eye";
+                } else {
+                    // すでに文字が見えている通常テキスト状態（text）であれば、安全のために元の「伏せ字（password）」モードに属性を戻す
+                    confirmPasswordInput.type = "password";
+                    // アイコンのクラス名も、再び「斜め線の入った、閉じた目（bi-eye-slash）」の形状へと動的に戻す
+                    confirmToggleIcon.className = "bi bi-eye-slash";
+                }
+            });
+
         });
     </script>
 }
