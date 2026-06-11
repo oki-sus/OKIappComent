@@ -98,7 +98,7 @@ namespace TaskManager.Areas.Identity.Pages.Account
 			// データベースへのユーザー登録が、見事に成功した場合の処理
 			if (result.Succeeded)
 			{
-				// 本来ここに書いてあった「自動ログイン処理（_signInManager.SignInAsync）」をあえて書かずに完全に無視します。
+				// 本来ここに書いてあった「自動ログイン処理（_signInManager.SignInAsync）」をあえて書かずに無視します。
 
 				// 自動ログインをさせないまま、即座にログイン画面（Loginページ）へと強制的にジャンプさせる
 				return RedirectToPage("Login");
