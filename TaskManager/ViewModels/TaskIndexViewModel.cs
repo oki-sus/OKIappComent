@@ -38,6 +38,9 @@ namespace TaskManager.ViewModels
 		// 画面上の「完了済みを非表示にする」というチェックボックスのON/OFF状態（真偽値）を保持するプロパティ
 		public bool HideCompleted { get; set; }
 
+		// 「期限が迫っているタスクのみを表示する」というチェックボックスのON/OFF状態を保持するプロパティ
+		public bool FilterUpcomingDeadline { get; set; }
+
 		// 期限切れ間近アラートの表示フラグ
 		public bool ShowExpiryAlert { get; set; }
 
