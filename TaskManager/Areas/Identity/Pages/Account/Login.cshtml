@@ -31,8 +31,10 @@
                             @* メールアドレス用のラベル。asp-forでC#のEmailプロパティと紐付け、少し小さめの太字にする *@
                             <label asp-for="Input.Email" class="form-label small fw-bold">メールアドレス</label>
                             @* メールアドレスの入力ボックス。枠線を濃くし、ブラウザの自動補完（ユーザー名）を有効に、入力必須として指定 *@
-                            <input asp-for="Input.Email" class="form-control border-secondary" autocomplete="username" aria-required="true" />
-                            
+                            @* 既製品モデルの英語メッセージの干渉を完全に遮断し、指定の日本語を表示させる *@
+                            <input class="form-control border-secondary" asp-for="Input.Email" autocomplete="username" aria-required="true"
+                                   data-val-required="メールアドレスは必須項目です。"
+                                   data-val-email="有効なメールアドレス形式で入力してください。" />
                             @* 入力されたメールアドレスの形式が違う場合や、未入力の場合にその場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.Email" class="text-danger small"></span>
                         </div>
@@ -42,8 +44,16 @@
                             @* パスワード用のラベル。asp-forでC#のPasswordプロパティと紐付け、少し小さめの太字にする *@
                             <label asp-for="Input.Password" class="form-label small fw-bold">パスワード</label>
                             @* パスワード入力ボックス。type="password"で文字を伏字にし、ブラウザの自動補完、入力必須として指定 *@
-                            <input asp-for="Input.Password" type="password" class="form-control border-secondary" autocomplete="current-password" aria-required="true" />
-                            
+                            @* 既製品モデルの英語メッセージを上書きし、画面内で日本語化を完了させる *@
+                            <div class="input-group">
+                                <input class="form-control border-secondary" asp-for="Input.Password" id="loginPasswordInput" autocomplete="current-password" aria-required="true"
+                                       data-val-required="パスワードは必須項目です。" />
+                                @* クリックすると表示/非表示を切り替えるための右端ボタン *@
+                                <button class="btn btn-outline-secondary border-secondary" type="button" id="toggleLoginPasswordBtn">
+                                    <i class="bi bi-eye-slash" id="loginToggleIcon"></i>
+                                </button>
+                            </div>
+
                             @* パスワードの入力不備（文字数不足など）がある場合にその場で赤文字のエラーを出す場所 *@
                             <span asp-validation-for="Input.Password" class="text-danger small"></span>
                         </div>
@@ -76,3 +86,41 @@
         </div>
     </div>
 </div>
+
+@* パスワード表示切り替えスクリプト *@
+@section Scripts {
+    @* 高速入力チェック用部品の読み込み *@
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        // 画面の部品がすべてブラウザに読み込まれ終わった瞬間に動き出す処理
+        document.addEventListener("DOMContentLoaded", function () {
+            // ログイン画面の中の「パスワード入力欄」「切り替えボタン」「目のアイコン」の3つの部品をそれぞれ取得
+            const loginPasswordInput = document.getElementById("loginPasswordInput");
+            const toggleLoginPasswordBtn = document.getElementById("toggleLoginPasswordBtn");
+            const loginToggleIcon = document.getElementById("loginToggleIcon");
+
+            // もし画面内にログインパスワードに関する部品が1つでも見つからない場合は、
+            // エラーで後続のバリデーションを破壊しないように処理を安全に終了（return）させる
+            if (!loginPasswordInput || !toggleLoginPasswordBtn || !loginToggleIcon) {
+                return;
+            }
+
+            // ユーザーが右端のボタンをクリックした時に発動
+            toggleLoginPasswordBtn.addEventListener("click", function () {
+                // もし現在、パスワードが伏せ字（password）モードなら
+                if (loginPasswordInput.type === "password") {
+                    // 文字がそのまま見えるテキスト（text）モードに切り替える
+                    loginPasswordInput.type = "text";
+                    // アイコンの形を、斜め線のない「開いた目（bi-eye）」に変更
+                    loginToggleIcon.className = "bi bi-eye";
+                } else {
+                    // すでに文字が見えている状態なら、安全のために伏せ字（password）モードに戻す
+                    loginPasswordInput.type = "password";
+                    // アイコンの形も、斜め線の入った「閉じた目（bi-eye-slash）」に戻す
+                    loginToggleIcon.className = "bi bi-eye-slash";
+                }
+            });
+        });
+    </script>
+}
