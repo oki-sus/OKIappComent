@@ -23,8 +23,30 @@
                     <form id="account" method="post">
                         @* セキュリティ対策（CSRF対策）。別サイトからの不正な偽装リクエストを検知するためのトークンを埋め込む *@
                         @Html.AntiForgeryToken()
-                        @* 入力エラーが起きた際、特定の項目以外に関するエラー（アカウントロック等）をまとめて画面上部に赤字で出す領域 *@
-                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3" role="alert"></div>
+                        @* サーバー側でのパスワードミスマッチなど、アカウント全体に関する検証状態を判定する条件分岐 *@
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @* ModelState（検証結果の記録簿）の中に、特定の英語エラーが含まれているかをループで走査する *@
+                            foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                foreach (var error in modelState.Errors)
+                                {
+                                    @* Identityが既定で返してくる「Invalid login attempt.」を条件判定で厳格にキャッチする *@
+                                    if (error.ErrorMessage == "Invalid login attempt.")
+                                    {
+                                        @* 英語のエラーメッセージを表示させず、ユーザーに分かりやすい日本語に差し替えて赤文字出力する安全装置 *@
+                                        <div class="text-danger small mb-3 fw-bold" role="alert">
+                                            <i class="bi bi-exclamation-triangle-fill me-1"></i>メールアドレスまたはパスワードが間違っています。
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        @* アカウントロックなど、それ以外の特殊な例外エラーが発生した場合は、そのまま既定の警告スタイルで出力する *@
+                                        <div class="text-danger small mb-3" role="alert">@error.ErrorMessage</div>
+                                    }
+                                }
+                            }
+                        }
                         
                         @* メールアドレス入力エリアのグループ（下部に余白を確保） *@
                         <div class="mb-3">
