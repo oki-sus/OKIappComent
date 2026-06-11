@@ -80,15 +80,30 @@
 
                 @* 画面の4分の1（col-md-3）を使用。隣の入力欄と高さを合わせるため、下寄せ（align-items-end）にして少し微調整を施した領域 *@
                 <div class="col-md-3 d-flex align-items-end pb-1">
-                    @* チェックボックス用の配置グループ *@
-                    <div class="form-check">
-                        @* 完了タスクを隠すためのチェックボックス。チェック状態（Model.HideCompleted）が真であれば、HTML側に checked 属性を書き込んでチェックを入れる *@
-                        <input class="form-check-input border-dark" type="checkbox" name="HideCompleted" value="true" id="hideCompleted" @(Model.HideCompleted ? "checked" : "")>
+                    @* 2つの独立したチェックボックスを縦並び（flex-column）にし、隙間（gap-2）を開けて配置するコンテナ *@
+                    <div class="d-flex flex-column gap-2">
+                        @* チェックボックス用の配置グループ *@
+                        <div class="form-check">
+                            @* 完了タスクを隠すためのチェックボックス。チェック状態（Model.HideCompleted）が真であれば、HTML側に checked 属性を書き込んでチェックを入れる *@
+                            <input class="form-check-input border-dark" type="checkbox" name="HideCompleted" value="true" id="hideCompleted" @(Model.HideCompleted ? "checked" : "")>
                         
-                        @* チェックボックスの横に並べる、小さめ太字のラベルテキスト *@
-                        <label class="form-check-label small fw-bold" for="hideCompleted">
-                            完了済みを非表示にする
-                        </label>
+                            @* チェックボックスの横に並べる、小さめ太字のラベルテキスト *@
+                            <label class="form-check-label small fw-bold" for="hideCompleted">
+                                完了済みを非表示にする
+                            </label>
+                        </div>
+
+                        @* 「期限が迫っているタスクのみ」チェックボックス  *@
+                        <div class="form-check">
+                            @* チェック状態（Model.FilterUpcomingDeadline）が真（true）であれば、 *@
+                            @* HTML側に checked 属性を動的に書き込んで、画面再表示時もチェックが入った状態を安全に維持する仕組み *@
+                            <input class="form-check-input border-dark" type="checkbox" name="FilterUpcomingDeadline" value="true" id="filterUpcomingDeadline" @(Model.FilterUpcomingDeadline ? "checked" : "")>
+
+                            @* for="filterUpcomingDeadline" で上記のインプットIDと紐付けることで、文字をクリックしてもチェックが連動する設計 *@
+                            <label class="form-check-label small fw-bold text-danger" for="filterUpcomingDeadline">
+                                <i class="bi bi-exclamation-triangle-fill me-1"></i>期限が迫っているもののみ
+                            </label>
+                        </div>
                     </div>
                 </div>
 

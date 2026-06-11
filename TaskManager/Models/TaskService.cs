@@ -130,6 +130,28 @@ namespace TaskManager.Models
 				query = query.Where(t => t.Status != TaskStatuses.Completed);
             }
 
+			// 画面側から届いたViewModel（vm）の「FilterUpcomingDeadline」フラグが真（true）であるか判定する。
+			// チェックが外れている（false）場合は、内部のクエリ改変処理を行わずに、そのままこのifブロック全体を安全にスルーさせる
+			if (vm.FilterUpcomingDeadline)
+			{
+				// 今日の日付を取得（時間部分を00:00:00にリセットして日付のみで比較できるようにする）
+				var today = DateTime.Today;
+
+				// 警告アラートの発生条件と同じく、「3日後の終わり」を基準として算出
+				var targetDate = today.AddDays(3);
+
+				// 組み立て途中のSQL（query）に対して、「自分のデータ」という大前提に加えて、さらに
+				// 1. 状態が「完了（Completed）」ではない未完了タスクであること
+				// 2. 期限が過去に切れたものではなく、今日以降であること
+				// 3. 期限が今日から数えて3日以内（targetDate以下）であること
+				// という3つの条件式を、論理演算子で繋いでデータベースへの要求（Where）に上書き連結する。
+				query = query.Where(t =>
+					t.Status != TaskStatuses.Completed &&
+					t.DueDate.Date >= today &&
+					t.DueDate.Date <= targetDate
+				);
+			}
+
 			// 三項演算子を使って並び替え順を判定。並び替えの設定が「降順（Descending）」だった場合の処理
 			query = vm.SortOrder == SortOrders.Descending
 				// 期限日が遅い順（カレンダーの未来の日付順）に並べ替える指示をクエリに付け足す
