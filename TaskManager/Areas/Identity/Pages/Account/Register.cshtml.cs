@@ -39,22 +39,22 @@ namespace TaskManager.Areas.Identity.Pages.Account
 		// 画面からの入力データを受け取るためだけの専用の構造（クラス）を定義
 		public class InputModel
 		{
-			// この項目は空っぽでの送信を禁止する（必須チェック）
-			[Required]
-			// 入力された文字が正しいメールアドレスの形式（@があるか等）かチェックする
-			[EmailAddress]
+			// この項目は空っぽでの送信を禁止する（必須チェック）　空で送信された場合は指定した日本語メッセージを画面に表示する
+			[Required(ErrorMessage = "メールアドレスは必須項目です。")]
+			// 送信された文字列が「@」やドメインを含む正しいメールアドレスの規格に準拠しているかを厳しく検証する
+			[EmailAddress(ErrorMessage = "有効なメールアドレス形式で入力してください。")]
 			// ユーザーが入力したメールアドレスを保存する変数
 			public string Email { get; set; } = string.Empty;
 
-			// この項目は空っぽでの送信を禁止する（必須チェック）
-			[Required]
+			// この項目は空っぽでの送信を禁止する（必須チェック）　空で送信された場合は指定した日本語メッセージを画面に表示する
+			[Required(ErrorMessage = "パスワードは必須項目です。")]
 			// このデータがパスワード（画面では黒丸で隠す文字）であることを指定
 			[DataType(DataType.Password)]
 			// ユーザーが入力したパスワードを保存する変数
 			public string Password { get; set; } = string.Empty;
 
-			// 画面側の確認用パスワードの指定（Input.ConfirmPassword）を受け止めるための箱
-			[Required]
+			// 画面側の確認用パスワードの指定（Input.ConfirmPassword）を受け止めるための箱　空で送信された場合は指定した日本語メッセージを画面に表示する
+			[Required(ErrorMessage = "確認用パスワードは必須項目です。")]
 			// このデータもパスワード形式として扱う
 			[DataType(DataType.Password)]
 			// 1回目に入力された「Password」プロパティと同じ文字が入っているか厳しくチェックする

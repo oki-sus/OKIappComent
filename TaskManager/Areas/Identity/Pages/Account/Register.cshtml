@@ -47,20 +47,20 @@
                         <div class="mb-3">
                             @* パスワード用のラベル。少し小さめの太字で濃い目の文字色に設定 *@
                             <label class="small fw-bold text-dark">パスワード</label>
-
-                            @* 入力ボックスと右側の目のマークボタンを一体化させる Bootstrap のグループ枠 *@
+                            @* 入力ボックスと右側の目のマークボタンを一体化させるためのBootstrapのグループコンテナ *@
                             <div class="input-group">
-                                @* パスワード入力ボックス　操作用の id="registerPasswordInput" を追加 *@
-                                <input asp-for="Input.Password" id="Input_Password" class="form-control" placeholder="パスワードを入力..." />
-
-                                @* 右端にドッキングするボタン *@
+                                @* JavaScriptがID名を探しにくるため、idを指定します *@
+                                <input asp-for="Input.Password" id="Input_Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="パスワードを入力..." />
+                                
+                                @* メインパスワード専用のID（toggleRegisterPasswordBtn）を付け、プログラムがこのボタンを特定できるようにします *@
                                 <button class="btn btn-outline-secondary" type="button" id="toggleRegisterPasswordBtn">
-                                    @* 初期値は「隠す」状態なので、斜め線の入った目のアイコン（bi-eye-slash）をセット *@
+                                    @* メインパスワード専用のアイコンID（registerToggleIcon）を付け、プログラムが目の形を切り替えられるようにします *@
                                     <i class="bi bi-eye-slash" id="registerToggleIcon"></i>
                                 </button>
                             </div>
-                            @* バリデーションエラー（文字数や大文字必須など）の赤文字を出す場所 *@
-                            <span asp-validation-for="Input.Password" class="text-danger"></span>
+
+                            @* パスワードの入力不備がある場合にその場で赤文字のエラーを出す場所 *@
+                            <span asp-validation-for="Input.Password" class="text-danger small"></span>
 
                             @* 箇条書きのドットマークを消し（list-unstyled）、上部に少しの余白（mt-2）と、視認性を高める小さめ文字（small）を適用 *@
                             <ul class="list-unstyled mt-2 small">
@@ -78,15 +78,12 @@
                         <div class="form-group mb-4">
                             @* 確認用パスワードのラベル。少し小さめの太字で濃い目の文字色に設定 *@
                             <label class="small fw-bold text-dark">パスワード（確認）</label>
-                            
                             @* 入力ボックスと右側の目のマークボタンを一体化させるためのBootstrapのグループコンテナ *@
                             <div class="input-group">
-                                @* 裏側のJavaScriptの切り替え処理が検知できるようにid="Input_ConfirmPassword" を設定 *@
-                                <input asp-for="Input.ConfirmPassword" id="Input_ConfirmPassword" class="form-control" placeholder="パスワードを再入力..." />
-
+                                @* JavaScriptがID名を探しにくるため、idを指定します *@
+                                <input id="Input_ConfirmPassword" asp-for="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="パスワードを再入力..." />
                                 @* クリックすると表示/非表示の切り替えJavaScriptを起動させるためのボタン *@
                                 <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPasswordBtn">
-                                    @* 初期状態は「隠す」設定のため、目のマークに斜め線が入ったアイコン（bi-eye-slash）をあらかじめセット *@
                                     <i class="bi bi-eye-slash" id="confirmToggleIcon"></i>
                                 </button>
                             </div>
