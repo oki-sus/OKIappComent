@@ -29,8 +29,53 @@
                     <form id="registerForm" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                         @* セキュリティ対策（CSRF対策）。別サイトからの不正な偽装リクエストを検知するためのトークンを埋め込む *@
                         @Html.AntiForgeryToken()
-                        @* 入力エラーが起きた際、すべての項目に関する不備（重複登録エラー等も含む）を画面上部にまとめて赤字で出す領域 *@
-                        <div asp-validation-summary="All" class="text-danger small mb-3" role="alert"></div>
+
+                        @* サーバー側での入力検証やユーザー重複など、登録処理に関するエラー状態（不備）が存在するかを判定する条件分岐 *@
+                        @if (!ViewData.ModelState.IsValid)
+                        {
+                            @* ModelState（検証結果の記録簿）の中に格納されているエラーメッセージをループ処理で1つずつ検査する *@
+                            foreach (var modelState in ViewData.ModelState.Values)
+                            {
+                                foreach (var error in modelState.Errors)
+                                {
+                                    @* 現在のループで処理対象となっている生の英語エラーメッセージを変数に退避 *@
+                                    var msg = error.ErrorMessage;
+
+                                    @* エラー文の文字パターンを比較判定し、合致したものを日本語に *@
+                                    if (msg.StartsWith("Passwords must be at least"))
+                                    {
+                                        <div class="text-danger small mb-1 fw-bold" role="alert"><i class="bi bi-x-circle-fill me-1"></i>パスワードは6文字以上で入力してください。</div>
+                                    }
+                                    else if (msg.Contains("non alphanumeric character"))
+                                    {
+                                        <div class="text-danger small mb-1 fw-bold" role="alert"><i class="bi bi-x-circle-fill me-1"></i>パスワードには記号（!, \, # など）を1文字以上含めてください。</div>
+                                    }
+                                    else if (msg.Contains("digit"))
+                                    {
+                                        <div class="text-danger small mb-1 fw-bold" role="alert"><i class="bi bi-x-circle-fill me-1"></i>パスワードには数字（0～9）を1文字以上含めてください。</div>
+                                    }
+                                    else if (msg.Contains("uppercase"))
+                                    {
+                                        <div class="text-danger small mb-1 fw-bold" role="alert"><i class="bi bi-x-circle-fill me-1"></i>パスワードには英大文字（A～Z）を1文字以上含めてください。</div>
+                                    }
+                                    else if (msg.Contains("lowercase"))
+                                    {
+                                        <div class="text-danger small mb-1 fw-bold" role="alert"><i class="bi bi-x-circle-fill me-1"></i>パスワードには英小文字（a～z）を1文字以上含めてください。</div>
+                                    }
+                                    else if (msg.Contains("is already taken"))
+                                    {
+                                        <div class="text-danger small mb-1 fw-bold" role="alert"><i class="bi bi-x-circle-fill me-1"></i>このメールアドレスは既に登録されています。</div>
+                                    }
+                                    else
+                                    {
+                                        @* 上記以外の予期せぬ特殊なシステムエラーが起きた場合は、元のメッセージをそのまま出力してプログラムを保護する *@
+                                        <div class="text-danger small mb-1" role="alert">@msg</div>
+                                    }
+                                }
+                            }
+                            @* エラーメッセージ群の最下部に少しの余白（mb-3）を設ける *@
+                            <div class="mb-3"></div>
+                        }
 
                         @* メールアドレス入力エリアのグループ（下部に余白を確保） *@
                         <div class="form-group mb-3">
